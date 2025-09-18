@@ -37,8 +37,9 @@ export const handlers = [
   http.post('/api/auth/login', async ({ request }) => {
     const { email, password } = await request.json() as { email: string; password: string };
     
-    // Mock authentication - in real app, validate credentials
-    if (email && password) {
+    // Test credentials for demo
+    if ((email === 'demo@entributos.com' && password === 'demo123') || 
+        (email === 'test@test.com' && password === 'test123')) {
       return HttpResponse.json({
         token: 'mock-jwt-token',
         user: usersData[0]
@@ -46,7 +47,7 @@ export const handlers = [
     }
     
     return new HttpResponse(
-      JSON.stringify({ message: 'Invalid credentials' }), 
+      JSON.stringify({ message: 'Credenciales inválidas. Usa demo@entributos.com / demo123' }), 
       { status: 401 }
     );
   }),

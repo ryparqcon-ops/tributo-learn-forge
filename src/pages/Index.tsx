@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { CourseCard } from "@/components/course/course-card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ArrowRight, CheckCircle, Users, Award, Sparkles } from "lucide-react";
+import { ArrowRight, CheckCircle, Users, Award, Sparkles, Star } from "lucide-react";
 
 const Index = () => {
   const { data: courses } = useQuery({
@@ -158,6 +158,85 @@ const Index = () => {
               </Button>
             </div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-20">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Lo que dicen nuestros <span className="hero-title">estudiantes</span>
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Miles de profesionales han transformado su carrera con Entributos
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                name: "Carlos Mendoza",
+                role: "Contador Público",
+                company: "Estudio Mendoza & Asociados",
+                content: "Los cursos de Entributos me han ayudado a resolver casos complejos que antes me tomaban días. Ahora tengo la confianza y el conocimiento para enfrentar cualquier desafío tributario.",
+                avatar: "https://i.pravatar.cc/100?u=carlos",
+                rating: 5
+              },
+              {
+                name: "María González",
+                role: "Gerente Financiera",
+                company: "Grupo Empresarial Lima",
+                content: "La asesoría personalizada y el contenido enriquecido con IA me han permitido optimizar los procesos fiscales de nuestra empresa. Excelente inversión.",
+                avatar: "https://i.pravatar.cc/100?u=maria",
+                rating: 5
+              },
+              {
+                name: "Roberto Vásquez",
+                role: "Consultor Tributario",
+                company: "Independiente",
+                content: "Después de completar 3 cursos, he aumentado mis ingresos en un 40%. El conocimiento especializado que ofrecen es invaluable para mi práctica profesional.",
+                avatar: "https://i.pravatar.cc/100?u=roberto",
+                rating: 5
+              }
+            ].map((testimonial, index) => (
+              <motion.div
+                key={testimonial.name}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="bg-card border border-border/50 rounded-lg p-6 hover-lift"
+              >
+                <div className="flex items-center mb-4">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-secondary text-secondary" />
+                  ))}
+                </div>
+                <p className="text-muted-foreground mb-6 italic">
+                  "{testimonial.content}"
+                </p>
+                <div className="flex items-center space-x-3">
+                  <img 
+                    src={testimonial.avatar} 
+                    alt={testimonial.name}
+                    className="w-10 h-10 rounded-full"
+                  />
+                  <div>
+                    <p className="font-semibold">{testimonial.name}</p>
+                    <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                    <p className="text-xs text-muted-foreground">{testimonial.company}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
     </div>

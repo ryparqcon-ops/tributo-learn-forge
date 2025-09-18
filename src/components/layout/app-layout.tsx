@@ -9,7 +9,10 @@ import {
   User, 
   LogOut,
   Search,
-  Bell
+  Bell,
+  Award,
+  Users,
+  Mail
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,6 +33,9 @@ export function AppLayout({ children }: AppLayoutProps) {
   const navigation = [
     { name: 'Cursos', href: '/courses', icon: BookOpen },
     { name: 'Asesorías', href: '/advisory', icon: Calendar },
+    { name: 'Planes', href: '/pricing', icon: Award },
+    { name: 'Nosotros', href: '/about', icon: Users },
+    { name: 'Contacto', href: '/contact', icon: Mail },
     { name: 'Mi Panel', href: '/dashboard', icon: User, protected: true },
   ];
 

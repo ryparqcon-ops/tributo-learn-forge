@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, BookOpen, Users, Star, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import heroImage from '@/assets/hero-tax-education.jpg';
 
 export function HeroSection() {
   const stats = [
@@ -36,9 +37,17 @@ export function HeroSection() {
 
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-gradient-hero">
+      {/* Background image */}
+      <div className="absolute inset-0">
+        <img 
+          src={heroImage} 
+          alt="Professional tax education" 
+          className="w-full h-full object-cover opacity-20"
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-background/90 via-background/70 to-background/90" />
+      </div>
       {/* Background decoration */}
       <div className="absolute inset-0 bg-grid-pattern opacity-5" />
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5" />
       
       <div className="container mx-auto px-4 py-20">
         <motion.div
@@ -58,9 +67,9 @@ export function HeroSection() {
           {/* Main headline */}
           <motion.div variants={itemVariants} className="space-y-4">
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight">
-              <span className="hero-title">Tax education,</span>
+              <span className="hero-title">Educación tributaria,</span>
               <br />
-              <span className="text-foreground">clear and practical</span>
+              <span className="text-foreground">clara y práctica</span>
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto text-balance">
               Aprende tributación con cursos prácticos, asesorías personalizadas y 
