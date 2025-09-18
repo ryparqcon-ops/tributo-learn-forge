@@ -1,0 +1,13 @@
+[
+  {
+    "id": "meet_01",
+    "type": "1:1_advisory",
+    "title": "Revisión Q3 - María",
+    "host": "inst1",
+    "attendee": "user_123",
+    "start": "2025-09-28T16:00:00-05:00",
+    "duration_minutes": 60,
+    "meeting_url": null,
+    "status": "confirmed"
+  }
+]

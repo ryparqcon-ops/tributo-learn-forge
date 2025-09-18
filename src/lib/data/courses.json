@@ -1,0 +1,36 @@
+[
+  {
+    "id": "course_tax_fundamentals",
+    "title": "Fundamentos Tributarios para Pymes",
+    "slug": "fundamentos-tributarios-pymes",
+    "summary": "Guía práctica sobre tributación local para pequeñas empresas.",
+    "instructor": { "id": "inst1", "name": "Arash" },
+    "price_cents": 19900,
+    "currency": "PEN",
+    "duration_minutes": 240,
+    "avg_lesson_time": 22,
+    "lessons": ["lesson_1", "lesson_2", "lesson_3"],
+    "tags": ["local", "práctico", "básico"],
+    "rating": 4.7,
+    "students_enrolled": 540,
+    "ai_enabled": true,
+    "thumbnail": "https://placehold.co/400x225/10B981/FFFFFF?text=Curso+1"
+  },
+  {
+    "id": "course_advanced_vat",
+    "title": "IVA Avanzado: Casos y Jurisprudencia",
+    "slug": "iva-avanzado",
+    "summary": "Análisis de criterios, riesgos y soluciones prácticas.",
+    "instructor": { "id": "inst2", "name": "Andrea" },
+    "price_cents": 34900,
+    "currency": "PEN",
+    "duration_minutes": 360,
+    "avg_lesson_time": 30,
+    "lessons": ["lesson_10", "lesson_11"],
+    "tags": ["iva", "avanzado"],
+    "rating": 4.9,
+    "students_enrolled": 210,
+    "ai_enabled": true,
+    "thumbnail": "https://placehold.co/400x225/F59E0B/FFFFFF?text=Curso+2"
+  }
+]

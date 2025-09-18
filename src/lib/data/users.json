@@ -1,0 +1,11 @@
+[
+  {
+    "id": "user_123",
+    "name": "María Pérez",
+    "email": "maria@ejemplo.com",
+    "role": "student",
+    "enrolled": ["course_tax_fundamentals"],
+    "progress": { "course_tax_fundamentals": 0.45 },
+    "avatar": "https://i.pravatar.cc/100?u=user_123"
+  }
+]

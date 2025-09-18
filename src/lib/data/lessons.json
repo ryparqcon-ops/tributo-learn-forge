@@ -1,0 +1,20 @@
+[
+  {
+    "id": "lesson_1",
+    "courseId": "course_tax_fundamentals",
+    "title": "Introducción a las obligaciones tributarias",
+    "duration_minutes": 22,
+    "video_url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    "resources": [{ "type": "pdf", "url": "/assets/res/obligaciones.pdf" }],
+    "transcript": "Esta es la transcripción de la lección..."
+  },
+  {
+    "id": "lesson_2",
+    "courseId": "course_tax_fundamentals",
+    "title": "Registro contable y comprobantes",
+    "duration_minutes": 25,
+    "video_url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+    "resources": [],
+    "transcript": "Otra transcripción de ejemplo..."
+  }
+]
