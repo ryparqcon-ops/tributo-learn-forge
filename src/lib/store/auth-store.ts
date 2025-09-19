@@ -43,8 +43,18 @@ export const useAuthStore = create<AuthState>()(
               name: 'Usuario Demo',
               email: 'demo@entributos.com',
               role: 'student',
-              enrolled: [],
-              progress: {},
+              enrolled: [
+                'course_tax_fundamentals',
+                'course_advanced_vat',
+                'course_payroll_taxes',
+                'course_income_tax'
+              ],
+              progress: {
+                'course_tax_fundamentals': 75,
+                'course_advanced_vat': 45,
+                'course_payroll_taxes': 20,
+                'course_income_tax': 90
+              },
               avatar: 'https://i.pravatar.cc/100?u=demo'
             };
             

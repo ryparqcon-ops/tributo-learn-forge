@@ -13,6 +13,14 @@ import { cn } from '@/lib/utils';
 const DashboardHome = () => {
   const { user } = useAuthStore();
 
+  // Calculate stats from user data
+  const enrolledCourses = user?.enrolled?.length || 0;
+  const progressValues = user?.progress ? Object.values(user.progress) : [];
+  const totalProgress = progressValues.length > 0 ? 
+    Math.round(progressValues.reduce((sum, progress) => sum + progress, 0) / progressValues.length) : 0;
+  const completedCourses = progressValues.filter(progress => progress === 100).length;
+  const inProgressCourses = progressValues.filter(progress => progress > 0 && progress < 100).length;
+
   return (
     <div className="space-y-8">
       <motion.div
@@ -30,23 +38,45 @@ const DashboardHome = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Cursos Activos</CardTitle>
+              <CardTitle className="text-sm font-medium">Cursos Inscritos</CardTitle>
               <BookOpen className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-primary">2</div>
-              <p className="text-xs text-muted-foreground">En progreso</p>
+              <div className="text-2xl font-bold text-primary">{enrolledCourses}</div>
+              <p className="text-xs text-muted-foreground">Total inscritos</p>
             </CardContent>
           </Card>
           
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Progreso Total</CardTitle>
+              <CardTitle className="text-sm font-medium">Progreso Promedio</CardTitle>
               <BarChart3 className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-primary">47%</div>
+              <div className="text-2xl font-bold text-primary">{totalProgress}%</div>
               <p className="text-xs text-muted-foreground">Completado</p>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">En Progreso</CardTitle>
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-primary">{inProgressCourses}</div>
+              <p className="text-xs text-muted-foreground">Cursos activos</p>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Completados</CardTitle>
+              <User className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-primary">{completedCourses}</div>
+              <p className="text-xs text-muted-foreground">Cursos finalizados</p>
             </CardContent>
           </Card>
           
@@ -127,8 +157,8 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
     <div className="min-h-screen py-6 lg:py-12">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
-          {/* Sidebar */}
-          <div className="lg:col-span-1 order-2 lg:order-1">
+          {/* Sidebar - Mobile: First, Desktop: Left */}
+          <div className="lg:col-span-1 order-1 lg:order-1">
             <div className="sticky top-24">
               <div className="bg-card rounded-xl border p-4 lg:p-6 shadow-sm">
                 <h3 className="text-base lg:text-lg font-semibold mb-4 lg:mb-6 text-foreground">Navegación</h3>
@@ -160,8 +190,8 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
             </div>
           </div>
 
-          {/* Main Content */}
-          <div className="lg:col-span-3 order-1 lg:order-2">
+          {/* Main Content - Mobile: Second, Desktop: Right */}
+          <div className="lg:col-span-3 order-2 lg:order-2">
             {children}
           </div>
         </div>

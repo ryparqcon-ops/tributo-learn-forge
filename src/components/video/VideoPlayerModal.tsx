@@ -71,9 +71,11 @@ export function VideoPlayerModal({
   const [showControls, setShowControls] = useState(true);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [showSettings, setShowSettings] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(true);
+  const [showSidebar, setShowSidebar] = useState(false);
 
   const currentLesson = lessons[currentLessonIndex];
+
+  console.log('VideoPlayerModal render - showSidebar:', showSidebar, 'isOpen:', isOpen);
 
   useEffect(() => {
     if (videoRef.current) {
@@ -328,12 +330,20 @@ export function VideoPlayerModal({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setShowSidebar(!showSidebar)}
-                  className={`text-white hover:bg-card/20 ${
+                  onClick={() => {
+                    console.log('Sidebar button clicked, current state:', showSidebar);
+                    setShowSidebar(!showSidebar);
+                  }}
+                  className={`relative text-white hover:bg-card/20 ${
                     showSidebar ? 'bg-card/20' : ''
                   }`}
+                  title="Mostrar/Ocultar lecciones"
                 >
                   <BookOpen className="h-5 w-5" />
+                  <span className="ml-1 text-xs hidden sm:inline">Lecciones</span>
+                  {!showSidebar && (
+                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse" />
+                  )}
                 </Button>
               </div>
 
@@ -521,27 +531,29 @@ export function VideoPlayerModal({
       </motion.div>
 
       {/* Lesson Info Sidebar - Mobile */}
-      <AnimatePresence>
-        {showSidebar && (
-          <motion.div
-            initial={{ opacity: 0, x: '100%' }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: '100%' }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 bg-black/50 z-30 lg:hidden"
-            onClick={() => setShowSidebar(false)}
+      {showSidebar && (
+        <div 
+          className="fixed inset-0 bg-black/70 z-50 block lg:hidden"
+          onClick={() => {
+            console.log('Sidebar backdrop clicked, closing sidebar');
+            setShowSidebar(false);
+          }}
+        >
+          <div 
+            className="absolute right-0 top-0 bottom-0 w-full max-w-sm bg-black/95 backdrop-blur-sm overflow-y-auto shadow-2xl"
+            onClick={(e) => {
+              console.log('Sidebar content clicked, preventing close');
+              e.stopPropagation();
+            }}
           >
-            <motion.div
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ duration: 0.3 }}
-              className="absolute right-0 top-0 bottom-0 w-full max-w-sm bg-black/95 backdrop-blur-sm overflow-y-auto"
-              onClick={(e) => e.stopPropagation()}
-            >
               <div className="p-4 sm:p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg sm:text-xl font-bold text-white">Contenido del curso</h3>
+                <div className="flex items-center justify-between mb-4 sticky top-0 bg-black/95 backdrop-blur-sm -mx-4 sm:-mx-6 px-4 sm:px-6 py-2">
+                  <div>
+                    <h3 className="text-lg sm:text-xl font-bold text-white">Contenido del curso</h3>
+                    <p className="text-sm text-white/80">
+                      Lección {currentLessonIndex + 1} de {lessons.length}
+                    </p>
+                  </div>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -606,10 +618,9 @@ export function VideoPlayerModal({
                   </Button>
                 </div>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
-      </AnimatePresence>
     </AnimatePresence>
   );
 }
