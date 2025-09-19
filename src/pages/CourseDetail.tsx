@@ -81,9 +81,9 @@ const CourseDetail = () => {
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white">
-        <div className="container mx-auto px-4 py-16">
+        <div className="container mx-auto px-4 py-8 md:py-16">
           <div className="max-w-6xl mx-auto">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
               {/* Course Info */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
@@ -98,74 +98,120 @@ const CourseDetail = () => {
               ))}
             </div>
                 
-                <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 md:mb-6 leading-tight">
                   {course.title}
                 </h1>
                 
-                <p className="text-xl mb-8 text-blue-100 leading-relaxed">
+                <p className="text-lg md:text-xl mb-6 md:mb-8 text-blue-100 leading-relaxed">
                   {course.description}
                 </p>
 
                 {/* Course Stats */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
                   <div className="text-center">
-                    <div className="flex items-center justify-center mb-2">
-                      <Clock className="h-5 w-5 mr-2" />
-                      <span className="text-2xl font-bold">{formatDuration(course.duration_minutes)}</span>
+                    <div className="flex items-center justify-center mb-1 md:mb-2">
+                      <Clock className="h-4 w-4 md:h-5 md:w-5 mr-1 md:mr-2" />
+                      <span className="text-lg md:text-2xl font-bold">{formatDuration(course.duration_minutes)}</span>
                     </div>
-                    <p className="text-sm text-blue-100">Duración total</p>
+                    <p className="text-xs md:text-sm text-blue-100">Duración total</p>
                   </div>
                   
                   <div className="text-center">
-                    <div className="flex items-center justify-center mb-2">
-                      <BookOpen className="h-5 w-5 mr-2" />
-                      <span className="text-2xl font-bold">{courseLessons.length}</span>
+                    <div className="flex items-center justify-center mb-1 md:mb-2">
+                      <BookOpen className="h-4 w-4 md:h-5 md:w-5 mr-1 md:mr-2" />
+                      <span className="text-lg md:text-2xl font-bold">{courseLessons.length}</span>
                     </div>
-                    <p className="text-sm text-blue-100">Lecciones</p>
+                    <p className="text-xs md:text-sm text-blue-100">Lecciones</p>
                   </div>
                   
                   <div className="text-center">
-                    <div className="flex items-center justify-center mb-2">
-                      <Users className="h-5 w-5 mr-2" />
-                      <span className="text-2xl font-bold">{course.students_enrolled}</span>
+                    <div className="flex items-center justify-center mb-1 md:mb-2">
+                      <Users className="h-4 w-4 md:h-5 md:w-5 mr-1 md:mr-2" />
+                      <span className="text-lg md:text-2xl font-bold">{course.students_enrolled}</span>
                     </div>
-                    <p className="text-sm text-blue-100">Estudiantes</p>
+                    <p className="text-xs md:text-sm text-blue-100">Estudiantes</p>
                   </div>
                   
                   <div className="text-center">
-                    <div className="flex items-center justify-center mb-2">
-                      <Star className="h-5 w-5 mr-2 fill-current" />
-                      <span className="text-2xl font-bold">{course.rating}</span>
+                    <div className="flex items-center justify-center mb-1 md:mb-2">
+                      <Star className="h-4 w-4 md:h-5 md:w-5 mr-1 md:mr-2 fill-current" />
+                      <span className="text-lg md:text-2xl font-bold">{course.rating}</span>
                     </div>
-                    <p className="text-sm text-blue-100">Calificación</p>
+                    <p className="text-xs md:text-sm text-blue-100">Calificación</p>
                   </div>
                 </div>
 
                 {/* Price and CTA */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                  <div>
-                    <div className="text-4xl font-bold mb-2">
-                      {formatPrice(course.price_cents, course.currency)}
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 md:p-6 border border-white/20">
+                  {/* Price Section - Centered */}
+                  <div className="text-center mb-6">
+                    <div className="flex items-center justify-center gap-2 mb-3">
+                      <span className="text-4xl md:text-5xl font-bold text-white">
+                        {formatPrice(course.price_cents, course.currency)}
+                      </span>
+                      <span className="text-sm text-blue-200 line-through opacity-75">
+                        S/ 399.00
+                      </span>
+                      <Badge className="bg-green-500 text-white text-xs px-2 py-1">
+                        -30%
+                      </Badge>
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-blue-100">
-                      {course.certificate && (
-                        <div className="flex items-center gap-1">
-                          <Award className="h-4 w-4" />
-                          <span>Certificado incluido</span>
-                        </div>
-                      )}
-                      {course.lifetime_access && (
-                        <div className="flex items-center gap-1">
-                          <Globe className="h-4 w-4" />
-                          <span>Acceso de por vida</span>
-                        </div>
-                      )}
-                    </div>
+                    <p className="text-sm text-blue-200">Pago único • Acceso de por vida</p>
                   </div>
                   
-                  <Button size="lg" className="bg-card text-primary hover:bg-card/90 text-lg px-8 py-3">
-                    Inscribirse Ahora
-                  </Button>
+                  {/* Benefits Section - Centered */}
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
+                    {course.certificate && (
+                      <div className="flex items-center gap-2 bg-white/10 rounded-lg p-3 min-w-0 flex-1 sm:flex-none">
+                        <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                          <Award className="h-4 w-4 text-green-400" />
+                        </div>
+                        <div className="text-center sm:text-left">
+                          <p className="text-sm font-medium text-white">Certificado incluido</p>
+                          <p className="text-xs text-blue-200">Al completar el curso</p>
+                        </div>
+                      </div>
+                    )}
+                    {course.lifetime_access && (
+                      <div className="flex items-center gap-2 bg-white/10 rounded-lg p-3 min-w-0 flex-1 sm:flex-none">
+                        <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                          <Globe className="h-4 w-4 text-blue-400" />
+                        </div>
+                        <div className="text-center sm:text-left">
+                          <p className="text-sm font-medium text-white">Acceso de por vida</p>
+                          <p className="text-xs text-blue-200">Sin límite de tiempo</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* CTA Button - Centered */}
+                  <div className="text-center mb-4">
+                    <Button size="lg" className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold text-base md:text-lg px-8 md:px-12 py-4 shadow-lg hover:shadow-xl transition-all duration-300">
+                      <span className="flex items-center gap-2">
+                        <GraduationCap className="h-5 w-5" />
+                        Inscribirse Ahora
+                      </span>
+                    </Button>
+                  </div>
+                  
+                  {/* Additional benefits - Centered */}
+                  <div className="pt-4 border-t border-white/20">
+                    <div className="flex flex-wrap justify-center gap-4 text-xs text-blue-200">
+                      <div className="flex items-center gap-1">
+                        <CheckCircle className="h-3 w-3 text-green-400" />
+                        <span>Garantía 30 días</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <CheckCircle className="h-3 w-3 text-green-400" />
+                        <span>Acceso inmediato</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <CheckCircle className="h-3 w-3 text-green-400" />
+                        <span>Soporte 24/7</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </motion.div>
 
@@ -174,17 +220,17 @@ const CourseDetail = () => {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="relative"
+                className="relative order-first lg:order-last"
               >
-                <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+                <div className="relative rounded-xl md:rounded-2xl overflow-hidden shadow-2xl">
                   <img 
                     src={course.thumbnail} 
                     alt={course.title}
-                    className="w-full h-80 object-cover"
+                    className="w-full h-48 sm:h-64 md:h-80 object-cover"
                   />
                   <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                    <Button size="lg" className="bg-card/90 text-foreground hover:bg-card">
-                      <Play className="h-6 w-6 mr-2" />
+                    <Button size="lg" className="bg-card/90 text-foreground hover:bg-card text-sm md:text-base">
+                      <Play className="h-5 w-5 md:h-6 md:w-6 mr-2" />
                       Ver Preview
                     </Button>
                   </div>
@@ -196,32 +242,32 @@ const CourseDetail = () => {
       </div>
 
       {/* Course Content */}
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 py-8 md:py-16">
         <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
             {/* Main Content */}
             <div className="lg:col-span-2">
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-4">
-                  <TabsTrigger value="overview">Resumen</TabsTrigger>
-                  <TabsTrigger value="curriculum">Contenido</TabsTrigger>
-                  <TabsTrigger value="instructor">Instructor</TabsTrigger>
-                  <TabsTrigger value="reviews">Reseñas</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto">
+                  <TabsTrigger value="overview" className="text-xs md:text-sm py-2">Resumen</TabsTrigger>
+                  <TabsTrigger value="curriculum" className="text-xs md:text-sm py-2">Contenido</TabsTrigger>
+                  <TabsTrigger value="instructor" className="text-xs md:text-sm py-2">Instructor</TabsTrigger>
+                  <TabsTrigger value="reviews" className="text-xs md:text-sm py-2">Reseñas</TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="overview" className="mt-8">
+                <TabsContent value="overview" className="mt-6 md:mt-8">
                   <Card>
                     <CardHeader>
-                      <CardTitle>¿Qué aprenderás en este curso?</CardTitle>
+                      <CardTitle className="text-lg md:text-xl">¿Qué aprenderás en este curso?</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="grid md:grid-cols-2 gap-4">
+                      <div className="grid sm:grid-cols-2 gap-3 md:gap-4">
                         {courseLessons.map((lesson, index) => (
                           <div key={lesson.id} className="flex items-start gap-3">
-                            <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                            <CheckCircle className="h-4 w-4 md:h-5 md:w-5 text-green-500 mt-0.5 flex-shrink-0" />
                             <div>
-                              <h4 className="font-medium">{lesson.title}</h4>
-                              <p className="text-sm text-muted-foreground">{lesson.description}</p>
+                              <h4 className="font-medium text-sm md:text-base">{lesson.title}</h4>
+                              <p className="text-xs md:text-sm text-muted-foreground">{lesson.description}</p>
                             </div>
                           </div>
                         ))}
@@ -229,23 +275,23 @@ const CourseDetail = () => {
                     </CardContent>
                   </Card>
 
-                  <Card className="mt-6">
+                  <Card className="mt-4 md:mt-6">
                     <CardHeader>
-                      <CardTitle>Requisitos del curso</CardTitle>
+                      <CardTitle className="text-lg md:text-xl">Requisitos del curso</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <ul className="space-y-2">
                         <li className="flex items-center gap-2">
-                          <CheckCircle className="h-4 w-4 text-green-500" />
-                          <span>Conocimientos básicos de contabilidad</span>
+                          <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
+                          <span className="text-sm md:text-base">Conocimientos básicos de contabilidad</span>
                         </li>
                         <li className="flex items-center gap-2">
-                          <CheckCircle className="h-4 w-4 text-green-500" />
-                          <span>Acceso a internet estable</span>
+                          <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
+                          <span className="text-sm md:text-base">Acceso a internet estable</span>
                         </li>
                         <li className="flex items-center gap-2">
-                          <CheckCircle className="h-4 w-4 text-green-500" />
-                          <span>Dispositivo con audio y video</span>
+                          <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
+                          <span className="text-sm md:text-base">Dispositivo con audio y video</span>
                         </li>
                       </ul>
                     </CardContent>
@@ -345,65 +391,65 @@ const CourseDetail = () => {
             </div>
 
             {/* Sidebar */}
-            <div className="space-y-6">
-              {/* Course Info Card */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Información del curso</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Nivel</span>
-                    <Badge variant="outline">{course.level}</Badge>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Idioma</span>
-                    <span className="text-sm">{course.language}</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Duración</span>
-                    <span className="text-sm">{formatDuration(course.duration_minutes)}</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Lecciones</span>
-                    <span className="text-sm">{courseLessons.length}</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Estudiantes</span>
-                    <span className="text-sm">{course.students_enrolled}</span>
-                  </div>
-            
-            <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Calificación</span>
-                    <div className="flex items-center gap-1">
-                      <Star className="h-4 w-4 fill-current text-yellow-400" />
-                      <span className="text-sm">{course.rating}</span>
+            <div className="space-y-4 md:space-y-6 order-first lg:order-last">
+              {/* Price Card - Sticky on mobile */}
+              <Card className="sticky top-4 md:static">
+                <CardContent className="p-4 md:p-6">
+                  <div className="text-center">
+                    <div className="text-2xl md:text-3xl font-bold mb-2">
+                      {formatPrice(course.price_cents, course.currency)}
+                    </div>
+                    <p className="text-xs md:text-sm text-muted-foreground mb-4 md:mb-6">Pago único • Acceso de por vida</p>
+                    
+                    <Button size="lg" className="w-full mb-4 text-sm md:text-base">
+                      Inscribirse Ahora
+                    </Button>
+                    
+                    <div className="text-xs text-muted-foreground space-y-1">
+                      <p>✓ Garantía de 30 días</p>
+                      <p>✓ Certificado de finalización</p>
+                      <p>✓ Acceso móvil y de escritorio</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Price Card */}
+              {/* Course Info Card */}
               <Card>
-                <CardContent className="p-6">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold mb-2">
-                      {formatPrice(course.price_cents, course.currency)}
-              </div>
-                    <p className="text-sm text-muted-foreground mb-6">Pago único • Acceso de por vida</p>
-                    
-                    <Button size="lg" className="w-full mb-4">
-                      Inscribirse Ahora
-              </Button>
-                    
-                    <div className="text-xs text-muted-foreground">
-                      <p>✓ Garantía de 30 días</p>
-                      <p>✓ Certificado de finalización</p>
-                      <p>✓ Acceso móvil y de escritorio</p>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base md:text-lg">Información del curso</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3 md:space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs md:text-sm text-muted-foreground">Nivel</span>
+                    <Badge variant="outline" className="text-xs">{course.level}</Badge>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs md:text-sm text-muted-foreground">Idioma</span>
+                    <span className="text-xs md:text-sm">{course.language}</span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs md:text-sm text-muted-foreground">Duración</span>
+                    <span className="text-xs md:text-sm">{formatDuration(course.duration_minutes)}</span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs md:text-sm text-muted-foreground">Lecciones</span>
+                    <span className="text-xs md:text-sm">{courseLessons.length}</span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs md:text-sm text-muted-foreground">Estudiantes</span>
+                    <span className="text-xs md:text-sm">{course.students_enrolled}</span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs md:text-sm text-muted-foreground">Calificación</span>
+                    <div className="flex items-center gap-1">
+                      <Star className="h-3 w-3 md:h-4 md:w-4 fill-current text-yellow-400" />
+                      <span className="text-xs md:text-sm">{course.rating}</span>
                     </div>
                   </div>
                 </CardContent>
