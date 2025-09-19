@@ -286,3 +286,17 @@
   from { box-shadow: 0 0 20px hsl(var(--primary) / 0.3); }
   to { box-shadow: 0 0 30px hsl(var(--primary) / 0.5); }
 }
+
+/* Company logos carousel animation */
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-scroll {
+  animation: scroll 30s linear infinite;
+}
+
+.animate-scroll:hover {
+  animation-play-state: paused;
+}

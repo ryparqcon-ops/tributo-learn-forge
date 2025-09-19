@@ -119,37 +119,210 @@ const Index = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-primary text-white">
-        <div className="container mx-auto px-4 text-center">
+      <section className="relative py-24 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 text-white overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-0 w-full h-full" style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+          }}></div>
+        </div>
+        
+        {/* Floating Elements */}
+        <div className="absolute top-20 left-10 w-32 h-32 bg-blue-400/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-40 h-40 bg-purple-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-cyan-400/20 rounded-full blur-2xl animate-pulse delay-500"></div>
+        
+        <div className="container mx-auto px-4 text-center relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="max-w-4xl mx-auto"
+          >
+            {/* Trust Badges */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              viewport={{ once: true }}
+              className="flex flex-wrap justify-center gap-3 mb-8"
+            >
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 text-sm">
+                <CheckCircle className="h-4 w-4 mr-2 inline" />
+                100% Gratis
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 text-sm">
+                <Users className="h-4 w-4 mr-2 inline" />
+                Sin compromiso
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 text-sm">
+                <Award className="h-4 w-4 mr-2 inline" />
+                Certificado incluido
+              </div>
+            </motion.div>
+
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+              Comienza tu transformación profesional hoy
+            </h2>
+            
+            <p className="text-xl md:text-2xl mb-4 opacity-90">
+              Únete a más de{' '}
+              <span className="text-3xl md:text-4xl font-bold text-yellow-300">
+                2,500
+              </span>{' '}
+              profesionales que ya confían en Entributos
+            </p>
+
+            <p className="text-lg mb-10 opacity-80 max-w-2xl mx-auto">
+              Accede a contenido premium, asesoría experta y una comunidad de profesionales
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+              <Button 
+                size="lg" 
+                className="text-lg px-10 py-6 bg-white text-slate-900 hover:bg-white/90 shadow-2xl hover:shadow-white/25 transition-all duration-300 transform hover:scale-105 font-semibold group"
+                asChild
+              >
+                <Link to="/register" className="flex items-center gap-3">
+                  <Sparkles className="h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
+                  Comenzar gratis
+                  <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
+                </Link>
+              </Button>
+              
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="text-lg px-10 py-6 border-2 border-white/30 bg-white/10 hover:bg-white/20 text-white hover:border-white/50 shadow-xl hover:shadow-white/20 transition-all duration-300 transform hover:scale-105 font-semibold backdrop-blur-sm" 
+                asChild
+              >
+                <Link to="/advisory" className="flex items-center gap-3">
+                  <Users className="h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
+                  Asesoría personalizada
+                  <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
+                </Link>
+              </Button>
+            </div>
+
+            {/* Social Proof */}
+            <motion.div 
+              className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-8 text-sm opacity-70"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 0.7, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.8 }}
+              viewport={{ once: true }}
+            >
+              <div className="flex items-center gap-2">
+                <div className="flex -space-x-2">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div key={i} className="w-8 h-8 rounded-full bg-white/20 border-2 border-white/30 flex items-center justify-center text-xs font-semibold">
+                      {i}
+                    </div>
+                  ))}
+                </div>
+                <span>+2,500 profesionales</span>
+              </div>
+              <div className="hidden sm:block w-px h-6 bg-white/30"></div>
+              <div className="flex items-center gap-2">
+                <Star className="h-4 w-4 text-yellow-300 fill-current" />
+                <span>4.9/5 calificación promedio</span>
+              </div>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Trusted Companies Section */}
+      <section className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="max-w-3xl mx-auto"
+            className="text-center mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Comienza tu transformación profesional hoy
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">
+              Empresas que confían en <span className="hero-title">Entributos</span>
             </h2>
-            <p className="text-xl mb-8 opacity-90">
-              Únete a más de 2,500 profesionales que ya confían en Entributos
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Más de 500 empresas ya han transformado su gestión tributaria con nosotros
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" variant="secondary" className="text-lg px-8 py-4" asChild>
-                <Link to="/register">
-                  Comenzar gratis
-                </Link>
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="text-lg px-8 py-4 border-white/20 bg-white/10 hover:bg-white/20 text-white" 
-                asChild
-              >
-                <Link to="/advisory">
-                  Asesoría personalizada
-                </Link>
-              </Button>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            viewport={{ once: true }}
+            className="relative overflow-hidden"
+          >
+            {/* Carousel Container */}
+            <div className="flex animate-scroll space-x-12 items-center">
+              {/* Duplicate logos for seamless loop */}
+              {[
+                { name: "Grupo Romero", logo: "🏢" },
+                { name: "Backus", logo: "🍺" },
+                { name: "Interbank", logo: "🏦" },
+                { name: "Ripley", logo: "🛍️" },
+                { name: "Falabella", logo: "🏪" },
+                { name: "Credicorp", logo: "💼" },
+                { name: "Alicorp", logo: "🥫" },
+                { name: "Gloria", logo: "🥛" },
+                { name: "Volkswagen", logo: "🚗" },
+                { name: "Samsung", logo: "📱" },
+                { name: "Microsoft", logo: "💻" },
+                { name: "Google", logo: "🔍" },
+                // Duplicate for seamless loop
+                { name: "Grupo Romero", logo: "🏢" },
+                { name: "Backus", logo: "🍺" },
+                { name: "Interbank", logo: "🏦" },
+                { name: "Ripley", logo: "🛍️" },
+                { name: "Falabella", logo: "🏪" },
+                { name: "Credicorp", logo: "💼" },
+                { name: "Alicorp", logo: "🥫" },
+                { name: "Gloria", logo: "🥛" },
+                { name: "Volkswagen", logo: "🚗" },
+                { name: "Samsung", logo: "📱" },
+                { name: "Microsoft", logo: "💻" },
+                { name: "Google", logo: "🔍" }
+              ].map((company, index) => (
+                <div
+                  key={`${company.name}-${index}`}
+                  className="flex-shrink-0 flex items-center justify-center group"
+                >
+                  <div className="text-6xl opacity-40 group-hover:opacity-60 transition-opacity duration-300 grayscale hover:grayscale-0">
+                    {company.logo}
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {/* Gradient overlays for smooth edges */}
+            <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-muted/30 to-transparent pointer-events-none"></div>
+            <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-muted/30 to-transparent pointer-events-none"></div>
+          </motion.div>
+
+          {/* Stats */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            viewport={{ once: true }}
+            className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8"
+          >
+            <div className="text-center">
+              <div className="text-4xl font-bold text-primary mb-2">500+</div>
+              <div className="text-muted-foreground">Empresas confían en nosotros</div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold text-primary mb-2">98%</div>
+              <div className="text-muted-foreground">Satisfacción del cliente</div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold text-primary mb-2">5 años</div>
+              <div className="text-muted-foreground">De experiencia en el mercado</div>
             </div>
           </motion.div>
         </div>

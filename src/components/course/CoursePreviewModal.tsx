@@ -119,6 +119,19 @@ export function CoursePreviewModal({ isOpen, onClose, course }: CoursePreviewMod
     }
   }, [isOpen]);
 
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
   // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
@@ -251,7 +264,7 @@ export function CoursePreviewModal({ isOpen, onClose, course }: CoursePreviewMod
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="relative max-w-6xl mx-auto h-full flex items-center justify-center p-2 lg:p-4 w-full"
+          className="relative max-w-6xl mx-auto h-full flex items-center justify-center p-2 lg:p-4 w-full overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="bg-card rounded-lg overflow-hidden w-full h-[90vh] flex flex-col">
@@ -282,7 +295,7 @@ export function CoursePreviewModal({ isOpen, onClose, course }: CoursePreviewMod
               {/* Video Section */}
               <div className="lg:col-span-2 relative">
                 <div 
-                  className="relative bg-black aspect-video w-full h-full flex items-center justify-center"
+                  className="relative bg-black aspect-video w-full h-full flex items-center justify-center overflow-hidden"
                   onMouseMove={() => {
                     setShowControls(true);
                     if (controlsTimeout) {
@@ -296,6 +309,14 @@ export function CoursePreviewModal({ isOpen, onClose, course }: CoursePreviewMod
                       clearTimeout(controlsTimeout);
                     }
                     const timeout = setTimeout(() => setShowControls(false), 1000);
+                    setControlsTimeout(timeout);
+                  }}
+                  onTouchStart={() => {
+                    setShowControls(true);
+                    if (controlsTimeout) {
+                      clearTimeout(controlsTimeout);
+                    }
+                    const timeout = setTimeout(() => setShowControls(false), 3000);
                     setControlsTimeout(timeout);
                   }}
                 >
@@ -342,7 +363,8 @@ export function CoursePreviewModal({ isOpen, onClose, course }: CoursePreviewMod
                       initial={{ y: 100 }}
                       animate={{ y: showControls ? 0 : 100 }}
                       transition={{ duration: 0.3 }}
-                      className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-3 lg:p-4"
+                      className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-3 lg:p-4
+                               fixed md:absolute z-20"
                     >
                       {/* Progress Bar */}
                       <div className="mb-4">
@@ -415,7 +437,7 @@ export function CoursePreviewModal({ isOpen, onClose, course }: CoursePreviewMod
               </div>
 
               {/* Course Info Sidebar */}
-              <div className="lg:col-span-1 p-4 lg:p-6 space-y-4 lg:space-y-6 overflow-y-auto h-[60vh] lg:h-auto">
+              <div className="lg:col-span-1 p-4 lg:p-6 space-y-4 lg:space-y-6 overflow-y-auto h-[60vh] lg:h-auto relative z-10">
                 {/* Price and CTA */}
                 <div className="text-center">
                   <div className="text-3xl font-bold text-primary mb-2">

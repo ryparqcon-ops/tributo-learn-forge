@@ -33,26 +33,29 @@ export const useAuthStore = create<AuthState>()(
       login: async (email: string, password: string) => {
         set({ isLoading: true });
         try {
-          // Mock login - replace with actual API call
-          const response = await fetch('/api/auth/login', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email, password }),
-          });
-
-          const data = await response.json();
+          // Simulate API delay
+          await new Promise(resolve => setTimeout(resolve, 1000));
           
-          if (response.ok) {
+          // Demo credentials check
+          if (email === 'demo@entributos.com' && password === 'demo123') {
+            const demoUser: User = {
+              id: 'demo-user-1',
+              name: 'Usuario Demo',
+              email: 'demo@entributos.com',
+              role: 'student',
+              enrolled: [],
+              progress: {},
+              avatar: 'https://i.pravatar.cc/100?u=demo'
+            };
+            
             set({ 
-              user: data.user, 
-              token: data.token, 
+              user: demoUser, 
+              token: 'demo-token-123', 
               isAuthenticated: true,
               isLoading: false 
             });
           } else {
-            throw new Error(data.message || 'Login failed');
+            throw new Error('Credenciales inválidas');
           }
         } catch (error) {
           set({ isLoading: false });

@@ -177,8 +177,8 @@ export const NavbarSearch = ({
             transition={{ duration: 0.2 }}
             className="absolute top-full left-0 right-0 mt-1 bg-card border rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto md:min-w-[400px] w-full"
           >
-            <div className="p-2">
-              <div className="text-xs font-medium text-muted-foreground mb-2 px-2">
+            <div className="p-3 sm:p-2">
+              <div className="text-xs font-medium text-muted-foreground mb-3 sm:mb-2 px-1">
                 Sugerencias ({suggestions.length})
               </div>
               {suggestions.map((course, index) => (
@@ -187,33 +187,33 @@ export const NavbarSearch = ({
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.2, delay: index * 0.05 }}
-                  className={`p-3 rounded-lg cursor-pointer transition-colors ${
+                  className={`p-3 sm:p-3 rounded-lg cursor-pointer transition-colors ${
                     index === selectedIndex
                       ? 'bg-primary text-primary-foreground'
                       : 'hover:bg-muted'
                   }`}
                   onClick={() => handleCourseSelect(course)}
                 >
-                  <div className="flex items-start gap-3">
+                  <div className="flex items-start gap-3 sm:gap-4">
                     <img
                       src={course.thumbnail}
                       alt={course.title}
-                      className="w-10 h-7 object-cover rounded"
+                      className="w-12 h-8 sm:w-10 sm:h-7 object-cover rounded flex-shrink-0"
                     />
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-sm line-clamp-1">
+                      <h4 className="font-medium text-sm sm:text-sm line-clamp-2 leading-tight">
                         {course.title}
                       </h4>
-                      <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mt-2 text-xs text-muted-foreground">
                         <div className="flex items-center gap-1">
-                          <User className="h-3 w-3" />
+                          <User className="h-3 w-3 flex-shrink-0" />
                           <span className="truncate">{course.instructor.name}</span>
                         </div>
                         <div className="flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          {formatDuration(course.duration_minutes)}
+                          <Clock className="h-3 w-3 flex-shrink-0" />
+                          <span>{formatDuration(course.duration_minutes)}</span>
                         </div>
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className="text-xs w-fit">
                           {course.level}
                         </Badge>
                       </div>
@@ -223,10 +223,10 @@ export const NavbarSearch = ({
               ))}
               
               {/* Show all results link */}
-              <div className="px-2 pt-2 border-t border-border">
+              <div className="px-1 sm:px-2 pt-3 sm:pt-2 border-t border-border">
                 <button
                   onClick={handleSearch}
-                  className="w-full text-left p-2 rounded-lg hover:bg-muted transition-colors text-sm text-muted-foreground hover:text-foreground"
+                  className="w-full text-left p-3 sm:p-2 rounded-lg hover:bg-muted transition-colors text-sm text-muted-foreground hover:text-foreground"
                 >
                   Ver todos los resultados para "{query}"
                 </button>

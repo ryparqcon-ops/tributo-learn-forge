@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Eye, EyeOff, BookOpen } from 'lucide-react';
+import { Eye, EyeOff, BookOpen, Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,18 +21,41 @@ type LoginForm = z.infer<typeof loginSchema>;
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
   const { login, isAuthenticated, isLoading } = useAuthStore();
   const location = useLocation();
   
   const from = location.state?.from?.pathname || '/dashboard';
 
+  // Credenciales de ejemplo para pruebas
+  const demoCredentials = {
+    demo: { email: 'demo@entributos.com', password: 'demo123' }
+  };
+
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
   });
+
+  const fillCredentials = (type: keyof typeof demoCredentials) => {
+    const credentials = demoCredentials[type];
+    setValue('email', credentials.email);
+    setValue('password', credentials.password);
+  };
+
+  const copyToClipboard = async (text: string, field: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedField(field);
+      setTimeout(() => setCopiedField(null), 2000);
+    } catch (err) {
+      console.error('Error copying to clipboard:', err);
+    }
+  };
 
   const onSubmit = async (data: LoginForm) => {
     try {
@@ -79,6 +102,70 @@ const Login = () => {
                 Ingresa tus credenciales para acceder a tu cuenta
               </CardDescription>
             </CardHeader>
+            
+            {/* Demo Credentials Section */}
+            <div className="px-6 pb-4">
+              <div className="bg-muted/50 rounded-lg p-4 border border-dashed">
+                <h3 className="text-sm font-medium text-muted-foreground mb-3 text-center">
+                  🧪 Credenciales de Prueba
+                </h3>
+                <div className="bg-card rounded-md p-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-medium text-muted-foreground mb-2">
+                        Demo
+                      </div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-sm text-foreground font-mono">
+                          demo@entributos.com
+                        </span>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-6 w-6 p-0"
+                          onClick={() => copyToClipboard('demo@entributos.com', 'demo-email')}
+                        >
+                          {copiedField === 'demo-email' ? (
+                            <Check className="h-3 w-3 text-green-500" />
+                          ) : (
+                            <Copy className="h-3 w-3" />
+                          )}
+                        </Button>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-foreground font-mono">
+                          demo123
+                        </span>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-6 w-6 p-0"
+                          onClick={() => copyToClipboard('demo123', 'demo-password')}
+                        >
+                          {copiedField === 'demo-password' ? (
+                            <Check className="h-3 w-3 text-green-500" />
+                          ) : (
+                            <Copy className="h-3 w-3" />
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="ml-2 text-xs"
+                      onClick={() => fillCredentials('demo')}
+                    >
+                      Usar
+                    </Button>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground mt-2 text-center">
+                  Haz clic en "Usar" para llenar automáticamente los campos
+                </p>
+              </div>
+            </div>
+
             <CardContent>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div className="space-y-2">
