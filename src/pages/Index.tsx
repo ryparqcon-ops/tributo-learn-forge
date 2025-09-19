@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ArrowRight, CheckCircle, Users, Award, Sparkles, Star } from "lucide-react";
 import coursesData from '@/lib/data/courses.json';
+import CompanyLogo from '@/components/ui/company-logos';
 
 const Index = () => {
   const courses = coursesData;
@@ -262,38 +263,46 @@ const Index = () => {
             <div className="flex animate-scroll space-x-12 items-center">
               {/* Duplicate logos for seamless loop */}
               {[
-                { name: "Grupo Romero", logo: "🏢" },
-                { name: "Backus", logo: "🍺" },
-                { name: "Interbank", logo: "🏦" },
-                { name: "Ripley", logo: "🛍️" },
-                { name: "Falabella", logo: "🏪" },
-                { name: "Credicorp", logo: "💼" },
-                { name: "Alicorp", logo: "🥫" },
-                { name: "Gloria", logo: "🥛" },
-                { name: "Volkswagen", logo: "🚗" },
-                { name: "Samsung", logo: "📱" },
-                { name: "Microsoft", logo: "💻" },
-                { name: "Google", logo: "🔍" },
+                { name: "Grupo Romero" },
+                { name: "Backus" },
+                { name: "Interbank" },
+                { name: "Ripley" },
+                { name: "Falabella" },
+                { name: "Credicorp" },
+                { name: "Alicorp" },
+                { name: "Gloria" },
+                { name: "Volkswagen" },
+                { name: "Samsung" },
+                { name: "Microsoft" },
+                { name: "Google" },
+                { name: "BCP" },
+                { name: "Scotiabank" },
+                { name: "Movistar" },
+                { name: "Claro" },
                 // Duplicate for seamless loop
-                { name: "Grupo Romero", logo: "🏢" },
-                { name: "Backus", logo: "🍺" },
-                { name: "Interbank", logo: "🏦" },
-                { name: "Ripley", logo: "🛍️" },
-                { name: "Falabella", logo: "🏪" },
-                { name: "Credicorp", logo: "💼" },
-                { name: "Alicorp", logo: "🥫" },
-                { name: "Gloria", logo: "🥛" },
-                { name: "Volkswagen", logo: "🚗" },
-                { name: "Samsung", logo: "📱" },
-                { name: "Microsoft", logo: "💻" },
-                { name: "Google", logo: "🔍" }
+                { name: "Grupo Romero" },
+                { name: "Backus" },
+                { name: "Interbank" },
+                { name: "Ripley" },
+                { name: "Falabella" },
+                { name: "Credicorp" },
+                { name: "Alicorp" },
+                { name: "Gloria" },
+                { name: "Volkswagen" },
+                { name: "Samsung" },
+                { name: "Microsoft" },
+                { name: "Google" },
+                { name: "BCP" },
+                { name: "Scotiabank" },
+                { name: "Movistar" },
+                { name: "Claro" }
               ].map((company, index) => (
                 <div
                   key={`${company.name}-${index}`}
                   className="flex-shrink-0 flex items-center justify-center group"
                 >
-                  <div className="text-6xl opacity-40 group-hover:opacity-60 transition-opacity duration-300 grayscale hover:grayscale-0">
-                    {company.logo}
+                  <div className="w-24 h-12 opacity-40 group-hover:opacity-70 transition-all duration-300 grayscale hover:grayscale-0 hover:scale-105">
+                    <CompanyLogo name={company.name} className="w-full h-full" />
                   </div>
                 </div>
               ))}

@@ -15,4 +15,23 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        // Add timestamp to chunk names to force cache invalidation
+        chunkFileNames: (chunkInfo) => {
+          const timestamp = Date.now();
+          return `assets/[name]-[hash]-${timestamp}.js`;
+        },
+        entryFileNames: (chunkInfo) => {
+          const timestamp = Date.now();
+          return `assets/[name]-[hash]-${timestamp}.js`;
+        },
+        assetFileNames: (assetInfo) => {
+          const timestamp = Date.now();
+          return `assets/[name]-[hash]-${timestamp}.[ext]`;
+        },
+      },
+    },
+  },
 }));

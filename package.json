@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "build:dev": "vite build --mode development",
+    "build:force": "rm -rf dist && vite build",
+    "build:vercel": "rm -rf dist && rm -rf node_modules/.vite && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
