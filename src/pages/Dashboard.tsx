@@ -8,6 +8,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { DashboardCourses } from '@/components/dashboard/dashboard-courses';
 import { DashboardMeetings } from '@/components/dashboard/dashboard-meetings';
 import CoursePlayer from './CoursePlayer';
+import Account from './Account';
 import { cn } from '@/lib/utils';
 
 const DashboardHome = () => {
@@ -207,7 +208,7 @@ const Dashboard = () => {
         <Route index element={<DashboardHome />} />
         <Route path="courses" element={<DashboardCourses />} />
         <Route path="advisory" element={<DashboardMeetings />} />
-        <Route path="account" element={<div className="text-center py-12"><h2 className="text-2xl font-bold">Configuración de Cuenta</h2><p className="text-muted-foreground">Próximamente...</p></div>} />
+        <Route path="account" element={<Account />} />
         <Route path="course/:courseId" element={<CoursePlayer />} />
       </Routes>
     </DashboardLayout>

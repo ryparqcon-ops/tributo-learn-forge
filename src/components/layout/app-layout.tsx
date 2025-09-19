@@ -23,6 +23,7 @@ import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/lib/store/auth-store';
 import { useUIStore } from '@/lib/store/ui-store';
 import { NavbarSearch } from '@/components/search/navbar-search';
+import { WhatsAppButton } from '@/components/ui/whatsapp-button';
 import { cn } from '@/lib/utils';
 
 interface AppLayoutProps {
@@ -194,7 +195,25 @@ export function AppLayout({ children }: AppLayoutProps) {
                 );
               })}
               
-              {!isAuthenticated && (
+              {isAuthenticated ? (
+                <div className="pt-4 border-t border-border space-y-2">
+                  <div className="flex items-center space-x-2 px-3 py-2 text-sm text-muted-foreground">
+                    <User className="h-4 w-4" />
+                    <span>Hola, {user?.name}</span>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full text-red-600 hover:text-red-700 hover:bg-red-50" 
+                    onClick={() => {
+                      logout();
+                      setMobileMenuOpen(false);
+                    }}
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Cerrar Sesión
+                  </Button>
+                </div>
+              ) : (
                 <div className="pt-4 border-t border-border space-y-2">
                   <Button variant="ghost" className="w-full" asChild>
                     <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
@@ -217,6 +236,12 @@ export function AppLayout({ children }: AppLayoutProps) {
       <main className="flex-1">
         {children}
       </main>
+
+      {/* WhatsApp Button */}
+      <WhatsAppButton 
+        phoneNumber="+51999888777"
+        message="Hola! Me interesa conocer más sobre los cursos de tributación de Entributos. ¿Podrían ayudarme con información?"
+      />
 
       {/* Footer */}
       <footer className="border-t border-border bg-card">
