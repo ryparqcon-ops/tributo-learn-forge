@@ -1,43 +1,59 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useQuery } from '@tanstack/react-query';
-import { Search, Filter, Grid, List } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { Filter, Grid, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CourseCard } from '@/components/course/course-card';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { CourseSearch } from '@/components/search/course-search';
+import coursesData from '@/lib/data/courses.json';
 
 const Courses = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [selectedCourse, setSelectedCourse] = useState<any>(null);
+  const [showAllTags, setShowAllTags] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
-  const { data: courses, isLoading } = useQuery({
-    queryKey: ['courses'],
-    queryFn: async () => {
-      const response = await fetch('/api/courses');
-      return response.json();
-    },
-  });
+  const courses = coursesData;
+  const isLoading = false;
+
+  // Read search query from URL on component mount
+  useEffect(() => {
+    const urlSearchQuery = searchParams.get('search');
+    if (urlSearchQuery) {
+      setSearchQuery(urlSearchQuery);
+    }
+  }, [searchParams]);
+
+  // Detect mobile screen size
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+    
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
 
   const filteredCourses = courses?.filter((course: any) => {
     const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          course.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         course.instructor.name.toLowerCase().includes(searchQuery.toLowerCase());
+                         course.instructor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         course.tags.some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesTag = !selectedTag || course.tags.includes(selectedTag);
     return matchesSearch && matchesTag;
   });
 
   const allTags = [...new Set(courses?.flatMap((course: any) => course.tags) || [])] as string[];
+  const visibleTags = (!isMobile || showAllTags) ? allTags : allTags.slice(0, 6);
+  const hasMoreTags = isMobile && allTags.length > 6;
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <LoadingSpinner size="lg" />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen py-12">
@@ -66,57 +82,123 @@ const Courses = () => {
         >
           <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
             {/* Search */}
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
+            <div className="flex-1 max-w-md">
+              <CourseSearch
+                courses={courses}
+                onSearch={setSearchQuery}
+                onCourseSelect={(course) => {
+                  setSelectedCourse(course);
+                  setSearchQuery(course.title);
+                }}
                 placeholder="Buscar cursos..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 form-input"
               />
             </div>
 
             {/* View Toggle */}
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center bg-muted rounded-lg p-1">
               <Button
-                variant={viewMode === 'grid' ? 'default' : 'outline'}
+                variant={viewMode === 'grid' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setViewMode('grid')}
+                className={`h-8 w-8 p-0 transition-all duration-200 ${
+                  viewMode === 'grid' 
+                    ? 'bg-background shadow-sm' 
+                    : 'hover:bg-background/50'
+                }`}
+                title="Vista de cuadrícula"
               >
                 <Grid className="h-4 w-4" />
               </Button>
               <Button
-                variant={viewMode === 'list' ? 'default' : 'outline'}
+                variant={viewMode === 'list' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setViewMode('list')}
+                className={`h-8 w-8 p-0 transition-all duration-200 ${
+                  viewMode === 'list' 
+                    ? 'bg-background shadow-sm' 
+                    : 'hover:bg-background/50'
+                }`}
+                title="Vista de lista"
               >
-                <List className="h-4 w-4" />
+                <Menu className="h-4 w-4" />
               </Button>
             </div>
           </div>
 
           {/* Tags Filter */}
-          <div className="flex flex-wrap gap-2 mt-4">
-            <Button
-              variant={selectedTag === null ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setSelectedTag(null)}
-            >
-              Todos
-            </Button>
-            {allTags.map((tag: string) => (
+          <div className="mt-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-medium text-muted-foreground">Filtrar por categoría:</h3>
+              {hasMoreTags && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowAllTags(!showAllTags)}
+                  className="text-xs h-7 px-3 text-primary hover:text-primary/80 border border-primary/20 hover:border-primary/40"
+                >
+                  {showAllTags ? 'Ver menos' : `Ver todas (${allTags.length})`}
+                </Button>
+              )}
+            </div>
+            
+            {/* Desktop: Grid layout, Mobile: Flex with expand */}
+            <div className={isMobile ? "flex flex-wrap gap-2" : "flex flex-wrap gap-2"}>
               <Button
-                key={tag}
-                variant={selectedTag === tag ? 'default' : 'outline'}
+                variant={selectedTag === null ? 'default' : 'outline'}
                 size="sm"
-                onClick={() => setSelectedTag(tag)}
-                className="capitalize"
+                onClick={() => setSelectedTag(null)}
               >
-                {tag}
+                Todos
               </Button>
-            ))}
+              {visibleTags.map((tag: string) => (
+                <Button
+                  key={tag}
+                  variant={selectedTag === tag ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSelectedTag(tag)}
+                  className="capitalize"
+                >
+                  {tag}
+                </Button>
+              ))}
+            </div>
           </div>
         </motion.div>
+
+        {/* Selected Course */}
+        {selectedCourse && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="mb-6"
+          >
+            <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <img
+                    src={selectedCourse.thumbnail}
+                    alt={selectedCourse.title}
+                    className="w-16 h-10 object-cover rounded"
+                  />
+                  <div>
+                    <h3 className="font-semibold text-primary">{selectedCourse.title}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {selectedCourse.instructor.name} • {Math.floor(selectedCourse.duration_minutes / 60)}h {selectedCourse.duration_minutes % 60}m
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedCourse(null)}
+                >
+                  Ver todos los cursos
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Results Count */}
         <motion.div
@@ -127,6 +209,11 @@ const Courses = () => {
         >
           <p className="text-muted-foreground">
             {filteredCourses?.length || 0} cursos encontrados
+            {searchQuery && (
+              <span className="ml-2">
+                para "<span className="font-medium">{searchQuery}</span>"
+              </span>
+            )}
           </p>
         </motion.div>
 
@@ -150,7 +237,8 @@ const Courses = () => {
             >
               <CourseCard 
                 course={course} 
-                className={viewMode === 'list' ? "lg:flex lg:flex-row lg:items-center" : ""}
+                viewMode={viewMode}
+                className=""
               />
             </motion.div>
           ))}

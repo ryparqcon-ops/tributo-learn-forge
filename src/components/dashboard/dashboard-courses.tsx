@@ -1,53 +1,46 @@
 import { motion } from 'framer-motion';
-import { useQuery } from '@tanstack/react-query';
-import { Play, Clock, CheckCircle, BookOpen, BarChart3 } from 'lucide-react';
+import { Play, Clock, CheckCircle, BookOpen, BarChart3, Star, Users } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
+import { useAuthStore } from '@/lib/store/auth-store';
+import coursesData from '@/lib/data/courses.json';
+import lessonsData from '@/lib/data/lessons.json';
 
 export function DashboardCourses() {
-  const { data: courses } = useQuery({
-    queryKey: ['user-courses'],
-    queryFn: async () => {
-      // Mock enrolled courses with progress
-      return [
-        {
-          id: "course_tax_fundamentals",
-          title: "Fundamentos Tributarios para Pymes",
-          slug: "fundamentos-tributarios-pymes",
-          instructor: { name: "Arash" },
-          thumbnail: "https://placehold.co/400x225/10B981/FFFFFF?text=Curso+1",
-          progress: 65,
-          totalLessons: 12,
-          completedLessons: 8,
-          nextLesson: {
-            id: "lesson_9",
-            title: "Régimen MYPE Tributario",
-            duration: 25
-          },
-          lastAccessed: "2024-01-15",
-          timeSpent: 180 // minutes
-        },
-        {
-          id: "course_advanced_vat",
-          title: "IVA Avanzado: Casos y Jurisprudencia",
-          slug: "iva-avanzado",
-          instructor: { name: "Andrea" },
-          thumbnail: "https://placehold.co/400x225/F59E0B/FFFFFF?text=Curso+2",
-          progress: 30,
-          totalLessons: 8,
-          completedLessons: 3,
-          nextLesson: {
-            id: "lesson_4",
-            title: "Exoneraciones y Inafectaciones",
-            duration: 35
-          },
-          lastAccessed: "2024-01-10",
-          timeSpent: 90
-        }
-      ];
-    },
+  const { user } = useAuthStore();
+  
+  // Get enrolled courses from user data
+  const enrolledCourseIds = user?.enrolled || [];
+  const enrolledCourses = coursesData.filter(course => enrolledCourseIds.includes(course.id));
+  
+  // Calculate progress and get lesson data
+  const coursesWithProgress = enrolledCourses.map(course => {
+    const courseLessons = (lessonsData as any[]).filter(l => course.lessons.includes(l.id));
+    const totalLessons = courseLessons.length;
+    const completedLessons = Math.floor((user?.progress?.[course.id] || 0) * totalLessons);
+    const progress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+    
+    // Get next lesson
+    const nextLesson = courseLessons.find(lesson => 
+      courseLessons.indexOf(lesson) === completedLessons
+    );
+    
+    return {
+      ...course,
+      totalLessons,
+      completedLessons,
+      progress,
+      nextLesson: nextLesson ? {
+        id: nextLesson.id,
+        title: nextLesson.title,
+        duration: nextLesson.duration_minutes
+      } : null,
+      lastAccessed: "2024-01-15", // Mock data
+      timeSpent: Math.floor(course.duration_minutes * (progress / 100)) // Calculate based on progress
+    };
   });
 
   const formatTimeSpent = (minutes: number) => {
@@ -55,6 +48,12 @@ export function DashboardCourses() {
     const mins = minutes % 60;
     return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
   };
+
+  // Calculate overall statistics
+  const totalLessons = coursesWithProgress.reduce((sum, course) => sum + course.totalLessons, 0);
+  const completedLessons = coursesWithProgress.reduce((sum, course) => sum + course.completedLessons, 0);
+  const overallProgress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+  const totalTimeSpent = coursesWithProgress.reduce((sum, course) => sum + course.timeSpent, 0);
 
   return (
     <div className="space-y-6">
@@ -76,10 +75,10 @@ export function DashboardCourses() {
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">47%</div>
-            <Progress value={47} className="mt-2" />
+            <div className="text-2xl font-bold">{overallProgress}%</div>
+            <Progress value={overallProgress} className="mt-2" />
             <p className="text-xs text-muted-foreground mt-2">
-              11 de 20 lecciones completadas
+              {completedLessons} de {totalLessons} lecciones completadas
             </p>
           </CardContent>
         </Card>
@@ -90,9 +89,9 @@ export function DashboardCourses() {
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">4h 30m</div>
+            <div className="text-2xl font-bold">{formatTimeSpent(totalTimeSpent)}</div>
             <p className="text-xs text-muted-foreground">
-              Esta semana: 2h 15m
+              Tiempo estudiado
             </p>
           </CardContent>
         </Card>
@@ -103,7 +102,7 @@ export function DashboardCourses() {
             <BookOpen className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">2</div>
+            <div className="text-2xl font-bold">{coursesWithProgress.length}</div>
             <p className="text-xs text-muted-foreground">
               En progreso
             </p>
@@ -115,60 +114,93 @@ export function DashboardCourses() {
       <div className="space-y-4">
         <h2 className="text-xl font-semibold">Cursos Inscritos</h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {courses?.map((course: any, index: number) => (
-            <motion.div
-              key={course.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-            >
-              <Card className="hover-lift">
-                <div className="flex">
-                  <div className="w-32 h-24 flex-shrink-0">
-                    <img
-                      src={course.thumbnail}
-                      alt={course.title}
-                      className="w-full h-full object-cover rounded-l-lg"
-                    />
-                  </div>
-                  <div className="flex-1 p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="font-semibold text-sm line-clamp-2">{course.title}</h3>
-                      <div className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
-                        {course.progress}%
-                      </div>
+          {coursesWithProgress.length === 0 ? (
+            <div className="col-span-2 text-center py-12">
+              <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">No tienes cursos inscritos</h3>
+              <p className="text-muted-foreground mb-4">
+                Explora nuestra colección de cursos y comienza tu aprendizaje
+              </p>
+              <Button asChild>
+                <Link to="/courses">
+                  <BookOpen className="h-4 w-4 mr-2" />
+                  Explorar Cursos
+                </Link>
+              </Button>
+            </div>
+          ) : (
+            coursesWithProgress.map((course: any, index: number) => (
+              <motion.div
+                key={course.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+              >
+                <Card className="hover-lift">
+                  <div className="flex">
+                    <div className="w-32 h-24 flex-shrink-0">
+                      <img
+                        src={course.thumbnail}
+                        alt={course.title}
+                        className="w-full h-full object-cover rounded-l-lg"
+                      />
                     </div>
-                    
-                    <p className="text-xs text-muted-foreground mb-3">
-                      Por {course.instructor.name}
-                    </p>
-                    
-                    <div className="space-y-2">
-                      <Progress value={course.progress} className="h-2" />
+                    <div className="flex-1 p-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="font-semibold text-sm line-clamp-2">{course.title}</h3>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="text-xs">
+                            {course.level}
+                          </Badge>
+                          <div className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
+                            {course.progress}%
+                          </div>
+                        </div>
+                      </div>
                       
-                      <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span>{course.completedLessons}/{course.totalLessons} lecciones</span>
-                        <span>{formatTimeSpent(course.timeSpent)} estudiadas</span>
+                      <div className="flex items-center gap-2 mb-2">
+                        <p className="text-xs text-muted-foreground">
+                          Por {course.instructor.name}
+                        </p>
+                        <div className="flex items-center gap-1">
+                          <Star className="h-3 w-3 fill-current text-yellow-400" />
+                          <span className="text-xs text-muted-foreground">{course.rating}</span>
+                        </div>
                       </div>
-                    </div>
-                    
-                    <div className="mt-3 flex items-center justify-between">
-                      <div className="text-xs">
-                        <p className="text-muted-foreground">Siguiente:</p>
-                        <p className="font-medium">{course.nextLesson.title}</p>
+                      
+                      <div className="space-y-2">
+                        <Progress value={course.progress} className="h-2" />
+                        
+                        <div className="flex items-center justify-between text-xs text-muted-foreground">
+                          <span>{course.completedLessons}/{course.totalLessons} lecciones</span>
+                          <span>{formatTimeSpent(course.timeSpent)} estudiadas</span>
+                        </div>
                       </div>
-                      <Button size="sm" className="btn-primary" asChild>
-                        <Link to={`/dashboard/course/${course.id}`}>
-                          <Play className="h-3 w-3 mr-1" />
-                          Continuar
-                        </Link>
-                      </Button>
+                      
+                      <div className="mt-3 flex items-center justify-between">
+                        <div className="text-xs">
+                          {course.nextLesson ? (
+                            <>
+                              <p className="text-muted-foreground">Siguiente:</p>
+                              <p className="font-medium">{course.nextLesson.title}</p>
+                            </>
+                          ) : (
+                            <p className="text-green-600 font-medium">¡Curso completado!</p>
+                          )}
+                        </div>
+                        <Button size="sm" className="btn-primary" asChild>
+                          <Link to={`/dashboard/course/${course.id}`}>
+                            <Play className="h-3 w-3 mr-1" />
+                            {course.nextLesson ? 'Continuar' : 'Repasar'}
+                          </Link>
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Card>
-            </motion.div>
-          ))}
+                </Card>
+              </motion.div>
+            ))
+          )}
         </div>
       </div>
 

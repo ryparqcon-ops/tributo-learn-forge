@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AppLayout } from "./components/layout/app-layout";
+import { ScrollToTop } from "./components/ScrollToTop";
 import Index from "./pages/Index";
 import Courses from "./pages/Courses";
 import CourseDetail from "./pages/CourseDetail";
@@ -31,8 +32,15 @@ const App = () => {
     // Initialize MSW in development
     if (process.env.NODE_ENV === 'development') {
       import('./lib/mocks/browser').then(({ worker }) => {
-        worker.start({ onUnhandledRequest: 'bypass' });
-      });
+        worker.start({
+          onUnhandledRequest: 'bypass',
+          serviceWorker: {
+            url: '/mockServiceWorker.js'
+          }
+        }).then(() => {
+          console.log('MSW initialized successfully');
+        }).catch(console.error);
+      }).catch(console.error);
     }
   }, []);
 
@@ -42,6 +50,7 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <ScrollToTop />
           <AppLayout>
             <Routes>
               <Route path="/" element={<Index />} />

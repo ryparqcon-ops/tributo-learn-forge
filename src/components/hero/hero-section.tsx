@@ -36,25 +36,25 @@ export function HeroSection() {
   };
 
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-gradient-hero">
+    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       {/* Background image */}
       <div className="absolute inset-0">
         <img 
           src={heroImage} 
           alt="Professional tax education" 
-          className="w-full h-full object-cover opacity-20"
+          className="w-full h-full object-cover opacity-30"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-background/90 via-background/70 to-background/90" />
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/80 via-slate-800/70 to-slate-900/80" />
       </div>
       {/* Background decoration */}
-      <div className="absolute inset-0 bg-grid-pattern opacity-5" />
+      <div className="absolute inset-0 bg-grid-pattern opacity-10" />
       
-      <div className="container mx-auto px-4 py-20">
+      <div className="container mx-auto px-4 py-20 relative z-10">
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="max-w-4xl mx-auto text-center space-y-8"
+          className="max-w-4xl mx-auto text-center space-y-8 relative z-20"
         >
           {/* Badge */}
           <motion.div variants={itemVariants}>
@@ -67,11 +67,13 @@ export function HeroSection() {
           {/* Main headline */}
           <motion.div variants={itemVariants} className="space-y-4">
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight">
-              <span className="hero-title">Educación tributaria,</span>
+              <span className="bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">
+                Educación tributaria,
+              </span>
               <br />
-              <span className="text-foreground">clara y práctica</span>
+              <span className="text-white">clara y práctica</span>
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto text-balance">
+            <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto text-balance">
               Aprende tributación con cursos prácticos, asesorías personalizadas y 
               inteligencia artificial. Para profesionales que buscan excelencia.
             </p>
@@ -106,10 +108,10 @@ export function HeroSection() {
                   variants={itemVariants}
                   className="text-center"
                 >
-                  <div className="text-3xl md:text-4xl font-bold text-primary mb-2">
+                  <div className="text-3xl md:text-4xl font-bold text-blue-400 mb-2">
                     {stat.value}
                   </div>
-                  <div className="text-muted-foreground">
+                  <div className="text-white/80 font-medium">
                     {stat.label}
                   </div>
                 </motion.div>
@@ -119,14 +121,14 @@ export function HeroSection() {
 
           {/* Social proof */}
           <motion.div variants={itemVariants} className="pt-8">
-            <p className="text-muted-foreground mb-6">
+            <p className="text-white/80 mb-6 font-medium">
               Trusted by professionals and students — join the community
             </p>
-            <div className="flex items-center justify-center space-x-2 opacity-60">
+            <div className="flex items-center justify-center space-x-2">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="h-5 w-5 fill-secondary text-secondary" />
+                <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
               ))}
-              <span className="ml-2 text-sm text-muted-foreground">
+              <span className="ml-2 text-sm text-white/80 font-medium">
                 4.8/5 based on 1,200+ reviews
               </span>
             </div>
@@ -136,7 +138,7 @@ export function HeroSection() {
 
       {/* Floating elements */}
       <motion.div
-        className="absolute top-20 left-10 hidden lg:block"
+        className="absolute top-20 left-10 hidden lg:block z-5"
         animate={{
           y: [-10, 10, -10],
           rotate: [0, 5, 0],
@@ -147,13 +149,13 @@ export function HeroSection() {
           ease: "easeInOut",
         }}
       >
-        <div className="p-3 bg-card/80 backdrop-blur-sm rounded-lg border border-border/50">
-          <BookOpen className="h-6 w-6 text-primary" />
+        <div className="p-3 bg-card/10 backdrop-blur-sm rounded-lg border border-border/20 shadow-lg">
+          <BookOpen className="h-6 w-6 text-blue-400" />
         </div>
       </motion.div>
 
       <motion.div
-        className="absolute bottom-32 right-16 hidden lg:block"
+        className="absolute bottom-32 right-16 hidden lg:block z-5"
         animate={{
           y: [10, -10, 10],
           rotate: [0, -5, 0],
@@ -164,8 +166,8 @@ export function HeroSection() {
           ease: "easeInOut",
         }}
       >
-        <div className="p-3 bg-card/80 backdrop-blur-sm rounded-lg border border-border/50">
-          <Users className="h-6 w-6 text-secondary" />
+        <div className="p-3 bg-card/10 backdrop-blur-sm rounded-lg border border-border/20 shadow-lg">
+          <Users className="h-6 w-6 text-blue-400" />
         </div>
       </motion.div>
     </section>

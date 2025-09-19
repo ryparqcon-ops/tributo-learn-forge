@@ -1,19 +1,13 @@
 import { HeroSection } from "@/components/hero/hero-section";
 import { motion } from "framer-motion";
-import { useQuery } from "@tanstack/react-query";
 import { CourseCard } from "@/components/course/course-card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ArrowRight, CheckCircle, Users, Award, Sparkles, Star } from "lucide-react";
+import coursesData from '@/lib/data/courses.json';
 
 const Index = () => {
-  const { data: courses } = useQuery({
-    queryKey: ['courses', 'featured'],
-    queryFn: async () => {
-      const response = await fetch('/api/courses');
-      return response.json();
-    },
-  });
+  const courses = coursesData;
 
   const features = [
     {
@@ -60,8 +54,8 @@ const Index = () => {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 mb-12">
-            {courses?.slice(0, 2).map((course: any, index: number) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+            {courses?.slice(0, 4).map((course: any, index: number) => (
               <motion.div
                 key={course.id}
                 initial={{ opacity: 0, y: 20 }}

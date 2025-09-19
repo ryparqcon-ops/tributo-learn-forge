@@ -4,8 +4,12 @@
     "name": "María Pérez",
     "email": "maria@ejemplo.com",
     "role": "student",
-    "enrolled": ["course_tax_fundamentals"],
-    "progress": { "course_tax_fundamentals": 0.45 },
+    "enrolled": ["course_tax_fundamentals", "course_advanced_vat", "course_payroll_taxes"],
+    "progress": { 
+      "course_tax_fundamentals": 0.45,
+      "course_advanced_vat": 0.20,
+      "course_payroll_taxes": 0.0
+    },
     "avatar": "https://i.pravatar.cc/100?u=user_123"
   }
 ]

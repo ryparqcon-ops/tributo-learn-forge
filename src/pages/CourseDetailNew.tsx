@@ -27,31 +27,13 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import coursesData from '@/lib/data/courses.json';
 import lessonsData from '@/lib/data/lessons.json';
 
-interface Lesson {
-  id: string;
-  courseId: string;
-  title: string;
-  description: string;
-  duration_minutes: number;
-  video_url: string;
-  thumbnail: string;
-  resources: Array<{
-    type: string;
-    title: string;
-    url: string;
-  }>;
-  transcript: string;
-  objectives: string[];
-  order: number;
-}
-
 const CourseDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const [activeTab, setActiveTab] = useState('overview');
 
   // Find course by slug
   const course = coursesData.find(c => c.slug === slug);
-  const courseLessons = (lessonsData as Lesson[]).filter(l => course?.lessons.includes(l.id));
+  const courseLessons = lessonsData.filter(l => course?.lessons.includes(l.id));
 
   if (!course) {
     return (
@@ -78,7 +60,7 @@ const CourseDetail = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white">
         <div className="container mx-auto px-4 py-16">
@@ -90,13 +72,13 @@ const CourseDetail = () => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6 }}
               >
-            <div className="flex flex-wrap gap-2 mb-4">
-              {course.tags?.map((tag: string) => (
-                    <Badge key={tag} variant="secondary" className="capitalize bg-card/20 text-white border-border/30">
-                  {tag}
-                </Badge>
-              ))}
-            </div>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {course.tags?.map((tag: string) => (
+                    <Badge key={tag} variant="secondary" className="capitalize bg-white/20 text-white border-white/30">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
                 
                 <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
                   {course.title}
@@ -163,7 +145,7 @@ const CourseDetail = () => {
                     </div>
                   </div>
                   
-                  <Button size="lg" className="bg-card text-primary hover:bg-card/90 text-lg px-8 py-3">
+                  <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 text-lg px-8 py-3">
                     Inscribirse Ahora
                   </Button>
                 </div>
@@ -183,7 +165,7 @@ const CourseDetail = () => {
                     className="w-full h-80 object-cover"
                   />
                   <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                    <Button size="lg" className="bg-card/90 text-foreground hover:bg-card">
+                    <Button size="lg" className="bg-white/90 text-gray-900 hover:bg-white">
                       <Play className="h-6 w-6 mr-2" />
                       Ver Preview
                     </Button>
@@ -265,10 +247,10 @@ const CourseDetail = () => {
                         {courseLessons
                           .sort((a, b) => a.order - b.order)
                           .map((lesson, index) => (
-                          <div key={lesson.id} className="border rounded-lg p-4 hover:bg-card/50 transition-colors">
+                          <div key={lesson.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-4">
-                                <div className="w-8 h-8 bg-primary/10 text-primary rounded-full flex items-center justify-center text-sm font-medium">
+                                <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-medium">
                                   {index + 1}
                                 </div>
                                 <div>
@@ -322,7 +304,7 @@ const CourseDetail = () => {
                           <h3 className="text-2xl font-bold mb-2">{course.instructor.name}</h3>
                           <p className="text-lg text-muted-foreground mb-2">{course.instructor.title}</p>
                           <p className="text-sm text-muted-foreground mb-4">{course.instructor.experience} de experiencia</p>
-                          <p className="text-foreground/80 leading-relaxed">{course.instructor.bio}</p>
+                          <p className="text-gray-700 leading-relaxed">{course.instructor.bio}</p>
                         </div>
                       </div>
                     </CardContent>
@@ -376,8 +358,8 @@ const CourseDetail = () => {
                     <span className="text-sm text-muted-foreground">Estudiantes</span>
                     <span className="text-sm">{course.students_enrolled}</span>
                   </div>
-            
-            <div className="flex items-center justify-between">
+                  
+                  <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">Calificación</span>
                     <div className="flex items-center gap-1">
                       <Star className="h-4 w-4 fill-current text-yellow-400" />
@@ -393,12 +375,12 @@ const CourseDetail = () => {
                   <div className="text-center">
                     <div className="text-3xl font-bold mb-2">
                       {formatPrice(course.price_cents, course.currency)}
-              </div>
+                    </div>
                     <p className="text-sm text-muted-foreground mb-6">Pago único • Acceso de por vida</p>
                     
                     <Button size="lg" className="w-full mb-4">
                       Inscribirse Ahora
-              </Button>
+                    </Button>
                     
                     <div className="text-xs text-muted-foreground">
                       <p>✓ Garantía de 30 días</p>
