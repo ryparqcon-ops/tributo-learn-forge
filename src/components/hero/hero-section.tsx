@@ -74,7 +74,7 @@ export function HeroSection() {
               <span className="text-foreground">clara y práctica</span>
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto text-balance">
-              Aprende tributación con cursos prácticos, asesorías personalizadas y 
+              Aprende tributación con cursos prácticos, asesorías personalizadas e 
               inteligencia artificial. Para profesionales que buscan excelencia.
             </p>
           </motion.div>
