@@ -8,27 +8,53 @@
 
 @layer base {
   :root {
-    /* Light mode (fallback) - Entributos uses dark mode by default */
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
+    /* Light mode - Professional and clean theme */
+    --background: 0 0% 100%;           /* #FFFFFF - Pure white */
+    --foreground: 222.2 84% 4.9%;      /* #0F172A - Dark slate */
+    --card: 0 0% 100%;                 /* #FFFFFF - White cards */
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 158 64% 52%;
+    
+    /* Primary - Entributos green */
+    --primary: 158 64% 52%;            /* #10B981 - Entributos green */
     --primary-foreground: 0 0% 100%;
-    --secondary: 45 93% 47%;
+    --primary-hover: 158 64% 45%;      /* Darker green for hover */
+    --primary-glow: 158 64% 62%;       /* Lighter green for effects */
+    
+    /* Secondary - Gold/Yellow accent */
+    --secondary: 45 93% 47%;           /* #F59E0B - Premium gold */
     --secondary-foreground: 0 0% 0%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 45 93% 47%;
-    --accent-foreground: 0 0% 0%;
-    --destructive: 0 84.2% 60.2%;
+    --secondary-hover: 45 93% 40%;
+    
+    /* Neutral surfaces */
+    --muted: 210 40% 96.1%;            /* #F8FAFC - Light gray */
+    --muted-foreground: 215.4 16.3% 46.9%; /* #64748B - Muted text */
+    
+    --accent: 158 64% 52%;
+    --accent-foreground: 0 0% 100%;
+    
+    /* Status colors */
+    --destructive: 0 84.2% 60.2%;      /* #EF4444 - Error red */
     --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
+    --success: 158 64% 52%;            /* Success green */
+    --warning: 45 93% 47%;             /* Warning yellow */
+    
+    /* Borders and inputs */
+    --border: 214.3 31.8% 91.4%;       /* #E2E8F0 - Light borders */
     --input: 214.3 31.8% 91.4%;
     --ring: 158 64% 52%;
     --radius: 0.5rem;
+    
+    /* Sidebar for light mode */
+    --sidebar-background: 0 0% 98%;    /* #FAFAFA - Very light gray */
+    --sidebar-foreground: 222.2 84% 4.9%;
+    --sidebar-primary: 158 64% 52%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 40% 96.1%;
+    --sidebar-accent-foreground: 222.2 84% 4.9%;
+    --sidebar-border: 214.3 31.8% 91.4%;
+    --sidebar-ring: 158 64% 52%;
   }
 
   /* Dark mode - Primary theme for Entributos */
@@ -122,8 +148,7 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    /* Default to dark mode for Entributos */
-    @apply dark;
+    /* Theme will be applied dynamically via theme store */
   }
 
   /* Hide scrollbar but keep functionality */

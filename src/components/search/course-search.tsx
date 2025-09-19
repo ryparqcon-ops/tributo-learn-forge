@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Search, X, Clock, User } from 'lucide-react';
+import { Search, X, Clock, User, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -36,12 +36,22 @@ export const CourseSearch = ({
   const [suggestions, setSuggestions] = useState<Course[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [isSearching, setIsSearching] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
   // Debounced search
   useEffect(() => {
+    if (query.length > 0) {
+      setIsSearching(true);
+    }
+    
     const timeoutId = setTimeout(() => {
+      // Always trigger search for real-time filtering
+      onSearch(query);
+      setIsSearching(false);
+      
+      // Show suggestions only when typing (query length >= 2)
       if (query.length >= 2 && courses && courses.length > 0) {
         const filtered = courses.filter((course: Course) => 
           course.title.toLowerCase().includes(query.toLowerCase()) ||
@@ -52,11 +62,9 @@ export const CourseSearch = ({
         
         setSuggestions(filtered);
         setShowSuggestions(filtered.length > 0);
-        onSearch(query);
       } else {
         setSuggestions([]);
         setShowSuggestions(false);
-        onSearch('');
       }
     }, 300);
 
@@ -134,7 +142,11 @@ export const CourseSearch = ({
   return (
     <div className={`relative ${className}`}>
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        {isSearching ? (
+          <Loader2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground animate-spin" />
+        ) : (
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        )}
         <Input
           ref={inputRef}
           placeholder={placeholder}
@@ -144,7 +156,7 @@ export const CourseSearch = ({
           onFocus={() => query.length >= 2 && setShowSuggestions(true)}
           className="pl-10 pr-10 form-input"
         />
-        {query && (
+        {query && !isSearching && (
           <button
             onClick={handleClear}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
@@ -166,7 +178,7 @@ export const CourseSearch = ({
           >
             <div className="p-2">
               <div className="text-xs font-medium text-muted-foreground mb-2 px-2">
-                Sugerencias ({suggestions.length})
+                Sugerencias de cursos ({suggestions.length})
               </div>
               {suggestions.map((course, index) => (
                 <motion.div

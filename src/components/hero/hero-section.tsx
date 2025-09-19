@@ -36,15 +36,15 @@ export function HeroSection() {
   };
 
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-gradient-hero">
       {/* Background image */}
       <div className="absolute inset-0">
         <img 
           src={heroImage} 
           alt="Professional tax education" 
-          className="w-full h-full object-cover opacity-30"
+          className="w-full h-full object-cover opacity-30 dark:opacity-30"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/80 via-slate-800/70 to-slate-900/80" />
+        <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-card/70 to-background/80" />
       </div>
       {/* Background decoration */}
       <div className="absolute inset-0 bg-grid-pattern opacity-10" />
@@ -67,13 +67,13 @@ export function HeroSection() {
           {/* Main headline */}
           <motion.div variants={itemVariants} className="space-y-4">
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight">
-              <span className="bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
                 Educación tributaria,
               </span>
               <br />
-              <span className="text-white">clara y práctica</span>
+              <span className="text-foreground">clara y práctica</span>
             </h1>
-            <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto text-balance">
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto text-balance">
               Aprende tributación con cursos prácticos, asesorías personalizadas y 
               inteligencia artificial. Para profesionales que buscan excelencia.
             </p>
@@ -108,10 +108,10 @@ export function HeroSection() {
                   variants={itemVariants}
                   className="text-center"
                 >
-                  <div className="text-3xl md:text-4xl font-bold text-blue-400 mb-2">
+                  <div className="text-3xl md:text-4xl font-bold text-primary mb-2">
                     {stat.value}
                   </div>
-                  <div className="text-white/80 font-medium">
+                  <div className="text-muted-foreground font-medium">
                     {stat.label}
                   </div>
                 </motion.div>
@@ -121,14 +121,14 @@ export function HeroSection() {
 
           {/* Social proof */}
           <motion.div variants={itemVariants} className="pt-8">
-            <p className="text-white/80 mb-6 font-medium">
+            <p className="text-muted-foreground mb-6 font-medium">
               Trusted by professionals and students — join the community
             </p>
             <div className="flex items-center justify-center space-x-2">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+                <Star key={i} className="h-5 w-5 fill-secondary text-secondary" />
               ))}
-              <span className="ml-2 text-sm text-white/80 font-medium">
+              <span className="ml-2 text-sm text-muted-foreground font-medium">
                 4.8/5 based on 1,200+ reviews
               </span>
             </div>
@@ -150,7 +150,7 @@ export function HeroSection() {
         }}
       >
         <div className="p-3 bg-card/10 backdrop-blur-sm rounded-lg border border-border/20 shadow-lg">
-          <BookOpen className="h-6 w-6 text-blue-400" />
+          <BookOpen className="h-6 w-6 text-primary" />
         </div>
       </motion.div>
 
@@ -167,7 +167,7 @@ export function HeroSection() {
         }}
       >
         <div className="p-3 bg-card/10 backdrop-blur-sm rounded-lg border border-border/20 shadow-lg">
-          <Users className="h-6 w-6 text-blue-400" />
+          <Users className="h-6 w-6 text-primary" />
         </div>
       </motion.div>
     </section>

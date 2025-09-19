@@ -42,11 +42,16 @@ const Courses = () => {
   }, []);
 
   const filteredCourses = courses?.filter((course: any) => {
-    const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         course.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         course.instructor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         course.tags.some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+    // Search filter (handled by CourseSearch component)
+    const matchesSearch = !searchQuery || 
+      course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.instructor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.tags.some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    // Tag filter
     const matchesTag = !selectedTag || course.tags.includes(selectedTag);
+    
     return matchesSearch && matchesTag;
   });
 

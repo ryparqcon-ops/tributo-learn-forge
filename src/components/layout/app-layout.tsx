@@ -24,6 +24,7 @@ import { useAuthStore } from '@/lib/store/auth-store';
 import { useUIStore } from '@/lib/store/ui-store';
 import { NavbarSearch } from '@/components/search/navbar-search';
 import { WhatsAppButton } from '@/components/ui/whatsapp-button';
+import { ThemeSwitch } from '@/components/ui/theme-switch';
 import { cn } from '@/lib/utils';
 
 interface AppLayoutProps {
@@ -116,6 +117,9 @@ export function AppLayout({ children }: AppLayoutProps) {
                 />
               </div>
               
+              {/* Theme Switch */}
+              <ThemeSwitch />
+              
               {isAuthenticated ? (
                 <div className="flex items-center space-x-2">
                   <Button variant="ghost" size="sm">
@@ -172,6 +176,14 @@ export function AppLayout({ children }: AppLayoutProps) {
                     setMobileMenuOpen(false);
                   }}
                 />
+              </div>
+              
+              {/* Mobile Theme Switch */}
+              <div className="pb-4 border-b border-border">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Tema</span>
+                  <ThemeSwitch />
+                </div>
               </div>
               
               {navigation.map((item) => {
