@@ -42,29 +42,21 @@ const Register = () => {
 
   const onSubmit = async (data: RegisterForm) => {
     try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
+      console.log('📝 Iniciando registro...');
+      // Usar el método register del auth store que ahora usa Supabase
+      const { register } = useAuthStore.getState();
+      await register(data.email, data.password, data.name);
+      
+      console.log('✅ Registro completado en el formulario');
+      toast({
+        title: "¡Cuenta creada!",
+        description: "Tu cuenta ha sido creada exitosamente. Revisa tu email para confirmar tu cuenta.",
       });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        toast({
-          title: "¡Cuenta creada!",
-          description: "Tu cuenta ha sido creada exitosamente.",
-        });
-        // The auth store will be updated through the login process
-      } else {
-        throw new Error(result.message || 'Error al crear la cuenta');
-      }
-    } catch (error) {
+    } catch (error: any) {
+      console.error('❌ Error en el formulario:', error);
       toast({
         title: "Error",
-        description: "No se pudo crear la cuenta. Inténtalo de nuevo.",
+        description: error?.message || "No se pudo crear la cuenta. Inténtalo de nuevo.",
         variant: "destructive",
       });
     }

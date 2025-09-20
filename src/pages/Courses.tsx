@@ -7,19 +7,20 @@ import { Badge } from '@/components/ui/badge';
 import { CourseCard } from '@/components/course/course-card';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { CourseSearch } from '@/components/search/course-search';
-import coursesData from '@/lib/data/courses.json';
+import { useCourses } from '@/hooks/use-courses';
+import type { CourseWithDetails } from '@/lib/types/supabase';
 
 const Courses = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [selectedCourse, setSelectedCourse] = useState<any>(null);
+  const [selectedCourse, setSelectedCourse] = useState<CourseWithDetails | null>(null);
   const [showAllTags, setShowAllTags] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  const courses = coursesData;
-  const isLoading = false;
+  // Usar el hook de Supabase
+  const { courses, isLoading, error } = useCourses();
 
   // Read search query from URL on component mount
   useEffect(() => {
@@ -41,12 +42,12 @@ const Courses = () => {
     return () => window.removeEventListener('resize', checkIsMobile);
   }, []);
 
-  const filteredCourses = courses?.filter((course: any) => {
+  const filteredCourses = courses?.filter((course: CourseWithDetails) => {
     // Search filter (handled by CourseSearch component)
     const matchesSearch = !searchQuery || 
       course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       course.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.instructor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.instructor_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       course.tags.some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase()));
     
     // Tag filter
@@ -55,7 +56,7 @@ const Courses = () => {
     return matchesSearch && matchesTag;
   });
 
-  const allTags = [...new Set(courses?.flatMap((course: any) => course.tags) || [])] as string[];
+  const allTags = [...new Set(courses?.flatMap((course: CourseWithDetails) => course.tags) || [])] as string[];
   const visibleTags = (!isMobile || showAllTags) ? allTags : allTags.slice(0, 6);
   const hasMoreTags = isMobile && allTags.length > 6;
 
@@ -189,7 +190,7 @@ const Courses = () => {
                   <div>
                     <h3 className="font-semibold text-primary">{selectedCourse.title}</h3>
                     <p className="text-sm text-muted-foreground">
-                      {selectedCourse.instructor.name} • {Math.floor(selectedCourse.duration_minutes / 60)}h {selectedCourse.duration_minutes % 60}m
+                      {selectedCourse.instructor_name} • {Math.floor(selectedCourse.duration_minutes / 60)}h {selectedCourse.duration_minutes % 60}m
                     </p>
                   </div>
                 </div>
@@ -222,35 +223,56 @@ const Courses = () => {
           </p>
         </motion.div>
 
+        {/* Loading State */}
+        {isLoading && (
+          <div className="flex justify-center py-12">
+            <LoadingSpinner />
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">⚠️</div>
+            <h3 className="text-xl font-semibold mb-2">Error al cargar cursos</h3>
+            <p className="text-muted-foreground mb-4">{error}</p>
+            <Button onClick={() => window.location.reload()}>
+              Reintentar
+            </Button>
+          </div>
+        )}
+
         {/* Courses Grid */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className={
-            viewMode === 'grid'
-              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-              : "space-y-6"
-          }
-        >
-          {filteredCourses?.map((course: any, index: number) => (
-            <motion.div
-              key={course.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-            >
-              <CourseCard 
-                course={course} 
-                viewMode={viewMode}
-                className=""
-              />
-            </motion.div>
-          ))}
-        </motion.div>
+        {!isLoading && !error && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className={
+              viewMode === 'grid'
+                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                : "space-y-6"
+            }
+          >
+            {filteredCourses?.map((course: CourseWithDetails, index: number) => (
+              <motion.div
+                key={course.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+              >
+                <CourseCard 
+                  course={course} 
+                  viewMode={viewMode}
+                  className=""
+                />
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
 
         {/* Empty State */}
-        {filteredCourses?.length === 0 && (
+        {!isLoading && !error && filteredCourses?.length === 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

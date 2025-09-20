@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Link, useLocation } from 'react-router-dom';
 import { DashboardCourses } from '@/components/dashboard/dashboard-courses';
 import { DashboardMeetings } from '@/components/dashboard/dashboard-meetings';
+import DashboardAdvisory from '@/components/dashboard/dashboard-advisory';
 import CoursePlayer from './CoursePlayer';
 import Account from './Account';
 import { cn } from '@/lib/utils';
@@ -21,6 +22,16 @@ const DashboardHome = () => {
     Math.round(progressValues.reduce((sum, progress) => sum + progress, 0) / progressValues.length) : 0;
   const completedCourses = progressValues.filter(progress => progress === 100).length;
   const inProgressCourses = progressValues.filter(progress => progress > 0 && progress < 100).length;
+  
+  // Calculate study hours (mock data for now - in real app, this would come from lesson_progress table)
+  const studyHours = Math.round(progressValues.reduce((sum, progress) => sum + progress, 0) / 100 * 2.5); // Assuming 2.5h per course
+  
+  // Next meeting (mock data for now - in real app, this would come from meetings table)
+  const nextMeeting = enrolledCourses > 0 ? {
+    day: 20,
+    month: 'Ene',
+    time: '4:00 PM'
+  } : null;
 
   return (
     <div className="space-y-8">
@@ -87,8 +98,17 @@ const DashboardHome = () => {
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-primary">20</div>
-              <p className="text-xs text-muted-foreground">Ene, 4:00 PM</p>
+              {nextMeeting ? (
+                <>
+                  <div className="text-2xl font-bold text-primary">{nextMeeting.day}</div>
+                  <p className="text-xs text-muted-foreground">{nextMeeting.month}, {nextMeeting.time}</p>
+                </>
+              ) : (
+                <>
+                  <div className="text-2xl font-bold text-muted-foreground">-</div>
+                  <p className="text-xs text-muted-foreground">No hay asesorías programadas</p>
+                </>
+              )}
             </CardContent>
           </Card>
           
@@ -98,7 +118,7 @@ const DashboardHome = () => {
               <User className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-primary">24h</div>
+              <div className="text-2xl font-bold text-primary">{studyHours}h</div>
               <p className="text-xs text-muted-foreground">Este mes</p>
             </CardContent>
           </Card>
@@ -207,7 +227,7 @@ const Dashboard = () => {
       <Routes>
         <Route index element={<DashboardHome />} />
         <Route path="courses" element={<DashboardCourses />} />
-        <Route path="advisory" element={<DashboardMeetings />} />
+        <Route path="advisory" element={<DashboardAdvisory />} />
         <Route path="account" element={<Account />} />
         <Route path="course/:courseId" element={<CoursePlayer />} />
       </Routes>

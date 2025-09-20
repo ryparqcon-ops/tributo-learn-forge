@@ -152,5 +152,186 @@
       "Mantener cumplimiento legal"
     ],
     "order": 4
+  },
+  {
+    "id": "lesson_20",
+    "courseId": "course_payroll_taxes",
+    "title": "Fundamentos de las planillas de pago",
+    "description": "Aprende los conceptos básicos y estructura de las planillas de pago en el Perú.",
+    "duration_minutes": 28,
+    "video_url": "https://disk.sample.cat/samples/mov/1416529-hd_1280_720_30fps.mov",
+    "thumbnail": "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400&h=225&fit=crop",
+    "resources": [
+      { "type": "pdf", "title": "Manual de Planillas de Pago", "url": "/assets/res/planillas-manual.pdf" },
+      { "type": "excel", "title": "Plantilla de Planilla", "url": "/assets/res/plantilla-planilla.xlsx" }
+    ],
+    "transcript": "En esta lección aprenderás los fundamentos de las planillas de pago, incluyendo su estructura y elementos básicos según la normativa laboral peruana.",
+    "objectives": [
+      "Comprender la estructura de las planillas",
+      "Identificar los elementos obligatorios",
+      "Conocer la normativa aplicable"
+    ],
+    "order": 1
+  },
+  {
+    "id": "lesson_21",
+    "courseId": "course_payroll_taxes",
+    "title": "Cálculo de beneficios sociales",
+    "description": "Domina el cálculo de gratificaciones, CTS, vacaciones y otros beneficios sociales.",
+    "duration_minutes": 32,
+    "video_url": "https://disk.sample.cat/samples/mov/1416529-hd_1280_720_30fps.mov",
+    "thumbnail": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=225&fit=crop",
+    "resources": [
+      { "type": "pdf", "title": "Guía de Beneficios Sociales", "url": "/assets/res/beneficios-sociales.pdf" },
+      { "type": "excel", "title": "Calculadora de Beneficios", "url": "/assets/res/calculadora-beneficios.xlsx" }
+    ],
+    "transcript": "Aprende a calcular correctamente todos los beneficios sociales que debe recibir un trabajador según la legislación laboral peruana.",
+    "objectives": [
+      "Calcular gratificaciones correctamente",
+      "Determinar el monto de CTS",
+      "Aplicar cálculos de vacaciones"
+    ],
+    "order": 2
+  },
+  {
+    "id": "lesson_22",
+    "courseId": "course_payroll_taxes",
+    "title": "Aportes a ESSALUD y AFP",
+    "description": "Conoce las obligaciones y cálculos de aportes a ESSALUD, AFP y otros descuentos obligatorios.",
+    "duration_minutes": 25,
+    "video_url": "https://disk.sample.cat/samples/mov/1416529-hd_1280_720_30fps.mov",
+    "thumbnail": "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400&h=225&fit=crop",
+    "resources": [
+      { "type": "pdf", "title": "Manual de Aportes", "url": "/assets/res/aportes-manual.pdf" }
+    ],
+    "transcript": "Esta lección cubre todos los aportes obligatorios que debe realizar el empleador y los descuentos al trabajador.",
+    "objectives": [
+      "Calcular aportes a ESSALUD",
+      "Determinar aportes a AFP",
+      "Aplicar otros descuentos obligatorios"
+    ],
+    "order": 3
+  },
+  {
+    "id": "lesson_23",
+    "courseId": "course_payroll_taxes",
+    "title": "Impuesto a la Renta de 5ta categoría",
+    "description": "Aprende el cálculo y retención del Impuesto a la Renta de 5ta categoría en planillas.",
+    "duration_minutes": 30,
+    "video_url": "https://disk.sample.cat/samples/mov/1416529-hd_1280_720_30fps.mov",
+    "thumbnail": "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=400&h=225&fit=crop",
+    "resources": [
+      { "type": "pdf", "title": "Guía de IR 5ta Categoría", "url": "/assets/res/ir-5ta-categoria.pdf" },
+      { "type": "excel", "title": "Calculadora de IR", "url": "/assets/res/calculadora-ir.xlsx" }
+    ],
+    "transcript": "Domina el cálculo y retención del Impuesto a la Renta de 5ta categoría en las planillas de pago.",
+    "objectives": [
+      "Calcular IR de 5ta categoría",
+      "Aplicar retenciones correctamente",
+      "Entender las exoneraciones"
+    ],
+    "order": 4
+  },
+  {
+    "id": "lesson_24",
+    "courseId": "course_payroll_taxes",
+    "title": "Casos prácticos y herramientas",
+    "description": "Aplica todo lo aprendido con casos reales y herramientas prácticas para planillas.",
+    "duration_minutes": 35,
+    "video_url": "https://disk.sample.cat/samples/mov/1416529-hd_1280_720_30fps.mov",
+    "thumbnail": "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400&h=225&fit=crop",
+    "resources": [
+      { "type": "pdf", "title": "Casos Prácticos de Planillas", "url": "/assets/res/casos-planillas.pdf" },
+      { "type": "excel", "title": "Sistema Completo de Planillas", "url": "/assets/res/sistema-planillas.xlsx" }
+    ],
+    "transcript": "Resolución de casos prácticos completos que te ayudarán a dominar el manejo integral de planillas.",
+    "objectives": [
+      "Resolver casos complejos de planillas",
+      "Utilizar herramientas prácticas",
+      "Desarrollar competencias profesionales"
+    ],
+    "order": 5
+  },
+  {
+    "id": "lesson_30",
+    "courseId": "course_income_tax",
+    "title": "Fundamentos del Impuesto a la Renta",
+    "description": "Conoce los conceptos básicos, sujetos pasivos y tipos de renta según la legislación peruana.",
+    "duration_minutes": 35,
+    "video_url": "https://disk.sample.cat/samples/mov/1416529-hd_1280_720_30fps.mov",
+    "thumbnail": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=225&fit=crop",
+    "resources": [
+      { "type": "pdf", "title": "Manual de IR Personas Naturales", "url": "/assets/res/ir-personas-manual.pdf" },
+      { "type": "pdf", "title": "Normativa Legal", "url": "/assets/res/normativa-ir.pdf" }
+    ],
+    "transcript": "Esta lección introduce los conceptos fundamentales del Impuesto a la Renta para personas naturales en el Perú.",
+    "objectives": [
+      "Identificar sujetos pasivos del IR",
+      "Comprender los tipos de renta",
+      "Conocer la normativa aplicable"
+    ],
+    "order": 1
+  },
+  {
+    "id": "lesson_31",
+    "courseId": "course_income_tax",
+    "title": "Rentas de Trabajo y Cálculo",
+    "description": "Aprende a calcular el IR sobre rentas de trabajo, incluyendo salarios, bonificaciones y otros ingresos laborales.",
+    "duration_minutes": 40,
+    "video_url": "https://disk.sample.cat/samples/mov/1416529-hd_1280_720_30fps.mov",
+    "thumbnail": "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=400&h=225&fit=crop",
+    "resources": [
+      { "type": "pdf", "title": "Guía de Rentas de Trabajo", "url": "/assets/res/rentas-trabajo.pdf" },
+      { "type": "excel", "title": "Calculadora de IR Trabajo", "url": "/assets/res/calculadora-ir-trabajo.xlsx" }
+    ],
+    "transcript": "Domina el cálculo del Impuesto a la Renta sobre todas las rentas de trabajo según la legislación vigente.",
+    "objectives": [
+      "Calcular IR sobre salarios",
+      "Aplicar retenciones correctamente",
+      "Manejar bonificaciones y gratificaciones"
+    ],
+    "order": 2
+  },
+  {
+    "id": "lesson_32",
+    "courseId": "course_income_tax",
+    "title": "Rentas de Capital y Deducciones",
+    "description": "Conoce las rentas de capital, deducciones permitidas y cómo optimizar tu declaración de renta.",
+    "duration_minutes": 45,
+    "video_url": "https://disk.sample.cat/samples/mov/1416529-hd_1280_720_30fps.mov",
+    "thumbnail": "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400&h=225&fit=crop",
+    "resources": [
+      { "type": "pdf", "title": "Guía de Rentas de Capital", "url": "/assets/res/rentas-capital.pdf" },
+      { "type": "pdf", "title": "Deducciones Permitidas", "url": "/assets/res/deducciones-ir.pdf" },
+      { "type": "excel", "title": "Planilla de Deducciones", "url": "/assets/res/planilla-deducciones.xlsx" }
+    ],
+    "transcript": "Aprende sobre rentas de capital, deducciones permitidas y estrategias para optimizar tu declaración de renta.",
+    "objectives": [
+      "Identificar rentas de capital",
+      "Aplicar deducciones correctamente",
+      "Optimizar la declaración de renta"
+    ],
+    "order": 3
+  },
+  {
+    "id": "lesson_33",
+    "courseId": "course_income_tax",
+    "title": "Declaración y Casos Prácticos",
+    "description": "Aprende a realizar la declaración de renta paso a paso con casos prácticos reales.",
+    "duration_minutes": 50,
+    "video_url": "https://disk.sample.cat/samples/mov/1416529-hd_1280_720_30fps.mov",
+    "thumbnail": "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400&h=225&fit=crop",
+    "resources": [
+      { "type": "pdf", "title": "Guía de Declaración", "url": "/assets/res/guia-declaracion.pdf" },
+      { "type": "pdf", "title": "Casos Prácticos IR", "url": "/assets/res/casos-practicos-ir.pdf" },
+      { "type": "excel", "title": "Formulario de Declaración", "url": "/assets/res/formulario-declaracion.xlsx" }
+    ],
+    "transcript": "Resolución paso a paso de la declaración de renta con casos prácticos y ejemplos reales.",
+    "objectives": [
+      "Completar la declaración de renta",
+      "Resolver casos prácticos",
+      "Evitar errores comunes"
+    ],
+    "order": 4
   }
 ]

@@ -19,7 +19,8 @@ export function DashboardCourses() {
   // Calculate progress and get lesson data
   const coursesWithProgress = enrolledCourses.map(course => {
     const courseLessons = (lessonsData as any[]).filter(l => course.lessons.includes(l.id));
-    const totalLessons = courseLessons.length;
+    // Use actual lessons count or fallback to course.lessons.length for consistency
+    const totalLessons = courseLessons.length || course.lessons.length;
     const progress = user?.progress?.[course.id] || 0;
     const completedLessons = Math.floor((progress / 100) * totalLessons);
     

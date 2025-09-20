@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   Clock, 
@@ -52,6 +52,9 @@ const CourseDetail = () => {
   // Find course by slug
   const course = coursesData.find(c => c.slug === slug);
   const courseLessons = (lessonsData as Lesson[]).filter(l => course?.lessons.includes(l.id));
+  
+  // Use actual lessons count or fallback to course.lessons.length for consistency
+  const lessonCount = courseLessons.length || course.lessons.length;
 
   if (!course) {
     return (
@@ -368,7 +371,13 @@ const CourseDetail = () => {
                           <h3 className="text-2xl font-bold mb-2">{course.instructor.name}</h3>
                           <p className="text-lg text-muted-foreground mb-2">{course.instructor.title}</p>
                           <p className="text-sm text-muted-foreground mb-4">{course.instructor.experience} de experiencia</p>
-                          <p className="text-foreground/80 leading-relaxed">{course.instructor.bio}</p>
+                          <p className="text-foreground/80 leading-relaxed mb-4">{course.instructor.bio}</p>
+                          
+                          <Link to={`/instructor/${course.instructor.id}`}>
+                            <Button variant="outline">
+                              Ver Perfil Completo
+                            </Button>
+                          </Link>
                         </div>
                       </div>
                     </CardContent>
@@ -437,7 +446,7 @@ const CourseDetail = () => {
                   
                   <div className="flex items-center justify-between">
                     <span className="text-xs md:text-sm text-muted-foreground">Lecciones</span>
-                    <span className="text-xs md:text-sm">{courseLessons.length}</span>
+                    <span className="text-xs md:text-sm">{lessonCount}</span>
                   </div>
                   
                   <div className="flex items-center justify-between">

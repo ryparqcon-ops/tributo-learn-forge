@@ -64,10 +64,10 @@ const Login = () => {
         title: "¡Bienvenido!",
         description: "Has iniciado sesión correctamente.",
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
-        title: "Error",
-        description: "Credenciales inválidas. Inténtalo de nuevo.",
+        title: "Error de autenticación",
+        description: error?.message || "Credenciales inválidas. Inténtalo de nuevo.",
         variant: "destructive",
       });
     }

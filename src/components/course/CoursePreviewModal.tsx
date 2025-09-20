@@ -23,42 +23,12 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
 import { Link } from 'react-router-dom';
-
-interface Course {
-  id: string;
-  title: string;
-  slug: string;
-  summary: string;
-  description?: string;
-  instructor: {
-    id: string;
-    name: string;
-    title?: string;
-    experience?: string;
-    avatar?: string;
-  };
-  price_cents: number;
-  currency: string;
-  duration_minutes: number;
-  avg_lesson_time: number;
-  lessons: string[];
-  tags: string[];
-  rating: number;
-  students_enrolled: number;
-  ai_enabled: boolean;
-  thumbnail: string;
-  level?: string;
-  language?: string;
-  certificate?: boolean;
-  lifetime_access?: boolean;
-  preview_video?: string;
-  preview_duration?: number;
-}
+import type { CourseWithDetails } from '@/lib/types/supabase';
 
 interface CoursePreviewModalProps {
   isOpen: boolean;
   onClose: () => void;
-  course: Course;
+  course: CourseWithDetails;
 }
 
 export function CoursePreviewModal({ isOpen, onClose, course }: CoursePreviewModalProps) {
@@ -459,7 +429,7 @@ export function CoursePreviewModal({ isOpen, onClose, course }: CoursePreviewMod
                   </div>
                   <div className="flex items-center gap-2">
                     <BookOpen className="h-4 w-4 text-muted-foreground" />
-                    <span>{course.lessons?.length || 0} lecciones</span>
+                    <span>{course.total_lessons || 0} lecciones</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Users className="h-4 w-4 text-muted-foreground" />
@@ -483,16 +453,16 @@ export function CoursePreviewModal({ isOpen, onClose, course }: CoursePreviewMod
                 <div>
                   <h3 className="font-semibold mb-2">Instructor</h3>
                   <div className="flex items-center gap-3">
-                    {course.instructor.avatar && (
+                    {course.instructor_avatar && (
                       <img
-                        src={course.instructor.avatar}
-                        alt={course.instructor.name}
+                        src={course.instructor_avatar}
+                        alt={course.instructor_name}
                         className="w-10 h-10 rounded-full object-cover"
                       />
                     )}
                     <div>
-                      <p className="font-medium text-sm">{course.instructor.name}</p>
-                      <p className="text-xs text-muted-foreground">{course.instructor.title}</p>
+                      <p className="font-medium text-sm">{course.instructor_name}</p>
+                      <p className="text-xs text-muted-foreground">{course.instructor_title}</p>
                     </div>
                   </div>
                 </div>

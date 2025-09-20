@@ -1,0 +1,446 @@
+[
+  {
+    "id": "inst1",
+    "name": "Dr. Carlos Mendoza",
+    "title": "Especialista en Tributación",
+    "experience_years": 15,
+    "avatar_url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face",
+    "bio": "Contador Público Colegiado con más de 15 años de experiencia en asesoría tributaria. Especialista en Pymes y ex-funcionario de SUNAT. Ha asesorado a más de 500 empresas en temas tributarios y ha capacitado a miles de profesionales en el área fiscal.",
+    "specializations": ["Tributación Empresarial", "Pymes", "SUNAT", "Asesoría Fiscal", "Planificación Tributaria"],
+    "education": [
+      {
+        "degree": "Doctor en Contabilidad y Finanzas",
+        "institution": "Universidad Nacional Mayor de San Marcos",
+        "year": 2010
+      },
+      {
+        "degree": "Maestría en Tributación",
+        "institution": "Universidad del Pacífico",
+        "year": 2008
+      },
+      {
+        "degree": "Contador Público Colegiado",
+        "institution": "Colegio de Contadores Públicos de Lima",
+        "year": 2005
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certificación Internacional en Tributación",
+        "issuer": "Instituto de Tributación Internacional",
+        "year": 2020
+      },
+      {
+        "name": "Especialización en SUNAT",
+        "issuer": "SUNAT - Escuela Nacional de Administración Pública",
+        "year": 2015
+      },
+      {
+        "name": "Certificación en Normas Internacionales de Información Financiera",
+        "issuer": "IFRS Foundation",
+        "year": 2018
+      }
+    ],
+    "work_experience": [
+      {
+        "position": "Director de Asesoría Tributaria",
+        "company": "Estudio Contable Mendoza & Asociados",
+        "period": "2015 - Presente",
+        "description": "Dirige un equipo de 12 contadores especializados en asesoría tributaria para empresas medianas y grandes."
+      },
+      {
+        "position": "Supervisor de Fiscalización",
+        "company": "SUNAT",
+        "period": "2008 - 2015",
+        "description": "Supervisó equipos de fiscalización en el sector de servicios y comercio, especializándose en Pymes."
+      },
+      {
+        "position": "Contador Senior",
+        "company": "Deloitte Perú",
+        "period": "2005 - 2008",
+        "description": "Asesoró a empresas multinacionales en temas de tributación y cumplimiento normativo."
+      }
+    ],
+    "social_links": {
+      "linkedin": "https://linkedin.com/in/carlos-mendoza-tributacion",
+      "twitter": "https://twitter.com/carlos_mendoza_cpc",
+      "website": "https://mendozaasociados.com",
+      "youtube": "https://youtube.com/@carlosmendozatributacion"
+    },
+    "teaching_style": "Metodología práctica basada en casos reales, con enfoque en la aplicación inmediata de conocimientos. Utiliza ejemplos del mundo empresarial peruano y mantiene actualizado el contenido con las últimas normativas.",
+    "languages": ["Español", "Inglés"],
+    "rating": 4.7,
+    "total_students": 1250,
+    "total_courses": 8,
+    "total_hours_taught": 320,
+    "response_time_hours": 4,
+    "is_verified": true,
+    "is_featured": true
+  },
+  {
+    "id": "inst2",
+    "name": "Dra. Andrea Vásquez",
+    "title": "Abogada Tributaria",
+    "experience_years": 12,
+    "avatar_url": "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=300&h=300&fit=crop&crop=face",
+    "bio": "Abogada especializada en derecho tributario con más de 12 años de experiencia. Ex-funcionaria de SUNAT y consultora de empresas multinacionales. Experta en litigios tributarios y asesoría en cumplimiento normativo.",
+    "specializations": ["Derecho Tributario", "Litigios Fiscales", "Cumplimiento Normativo", "Jurisprudencia", "Defensa Fiscal"],
+    "education": [
+      {
+        "degree": "Doctora en Derecho",
+        "institution": "Pontificia Universidad Católica del Perú",
+        "year": 2015
+      },
+      {
+        "degree": "Maestría en Derecho Tributario",
+        "institution": "Universidad de Lima",
+        "year": 2012
+      },
+      {
+        "degree": "Abogada",
+        "institution": "Pontificia Universidad Católica del Perú",
+        "year": 2010
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Especialización en Derecho Tributario Internacional",
+        "issuer": "Instituto de Estudios Fiscales de España",
+        "year": 2019
+      },
+      {
+        "name": "Certificación en Arbitraje Tributario",
+        "issuer": "Centro de Arbitraje de la Cámara de Comercio de Lima",
+        "year": 2017
+      }
+    ],
+    "work_experience": [
+      {
+        "position": "Socia Principal",
+        "company": "Vásquez & Asociados Abogados",
+        "period": "2018 - Presente",
+        "description": "Dirige el área de derecho tributario y litigios fiscales, representando a empresas en procesos ante SUNAT y el Poder Judicial."
+      },
+      {
+        "position": "Abogada Senior",
+        "company": "Estudio Echecopar",
+        "period": "2015 - 2018",
+        "description": "Especializada en asesoría tributaria para empresas del sector minero y energético."
+      },
+      {
+        "position": "Asesora Legal",
+        "company": "SUNAT - Gerencia de Asuntos Legales",
+        "period": "2012 - 2015",
+        "description": "Asesoró en la elaboración de normativas tributarias y representó a SUNAT en procesos judiciales."
+      }
+    ],
+    "social_links": {
+      "linkedin": "https://linkedin.com/in/andrea-vasquez-derecho-tributario",
+      "twitter": "https://twitter.com/andrea_vasquez_abg",
+      "website": "https://vasquezasociados.com"
+    },
+    "teaching_style": "Enfoque teórico-práctico con análisis de jurisprudencia y casos reales. Combina el conocimiento legal con la experiencia práctica en tribunales.",
+    "languages": ["Español", "Inglés", "Portugués"],
+    "rating": 4.9,
+    "total_students": 890,
+    "total_courses": 6,
+    "total_hours_taught": 280,
+    "response_time_hours": 6,
+    "is_verified": true,
+    "is_featured": true
+  },
+  {
+    "id": "inst3",
+    "name": "CPC María Elena Torres",
+    "title": "Especialista en Nóminas y Tributación Laboral",
+    "experience_years": 18,
+    "avatar_url": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face",
+    "bio": "Contadora especializada en recursos humanos y tributación laboral con 18 años de experiencia. Consultora de empresas con más de 500 trabajadores y experta en optimización de costos laborales.",
+    "specializations": ["Nóminas", "Tributación Laboral", "ESSALUD", "AFP", "Beneficios Sociales", "Costos Laborales"],
+    "education": [
+      {
+        "degree": "Maestría en Gestión de Recursos Humanos",
+        "institution": "Universidad ESAN",
+        "year": 2014
+      },
+      {
+        "degree": "Contador Público Colegiado",
+        "institution": "Colegio de Contadores Públicos de Lima",
+        "year": 2006
+      },
+      {
+        "degree": "Bachiller en Contabilidad",
+        "institution": "Universidad Nacional de Ingeniería",
+        "year": 2005
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certificación en Gestión de Nóminas",
+        "issuer": "Asociación de Gestión de Recursos Humanos del Perú",
+        "year": 2019
+      },
+      {
+        "name": "Especialización en Tributación Laboral",
+        "issuer": "SUNAT - Escuela Nacional de Administración Pública",
+        "year": 2016
+      }
+    ],
+    "work_experience": [
+      {
+        "position": "Gerente de Recursos Humanos",
+        "company": "Corporación Aceros Arequipa",
+        "period": "2018 - Presente",
+        "description": "Gestiona la nómina de más de 800 trabajadores y optimiza los costos laborales de la empresa."
+      },
+      {
+        "position": "Consultora Senior en Nóminas",
+        "company": "Consultora Torres & Asociados",
+        "period": "2010 - 2018",
+        "description": "Asesoró a más de 200 empresas en implementación de sistemas de nóminas y cumplimiento laboral."
+      },
+      {
+        "position": "Supervisora de Nóminas",
+        "company": "Backus - AB InBev",
+        "period": "2006 - 2010",
+        "description": "Supervisó el procesamiento de nóminas para más de 2000 empleados en múltiples plantas."
+      }
+    ],
+    "social_links": {
+      "linkedin": "https://linkedin.com/in/maria-elena-torres-rrhh",
+      "website": "https://torresasociados.com"
+    },
+    "teaching_style": "Metodología práctica con ejercicios reales de cálculo de nóminas. Utiliza software especializado y casos de empresas reales para el aprendizaje.",
+    "languages": ["Español"],
+    "rating": 4.8,
+    "total_students": 2100,
+    "total_courses": 12,
+    "total_hours_taught": 450,
+    "response_time_hours": 8,
+    "is_verified": true,
+    "is_featured": false
+  },
+  {
+    "id": "inst4",
+    "name": "Dr. Roberto Silva",
+    "title": "Tributólogo Senior",
+    "experience_years": 20,
+    "avatar_url": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop&crop=face",
+    "bio": "Doctor en Contabilidad y Finanzas con 20 años de experiencia en tributación. Ex-asesor del Ministerio de Economía y Finanzas y consultor de organismos internacionales. Especialista en impuesto a la renta y planificación fiscal.",
+    "specializations": ["Impuesto a la Renta", "Planificación Fiscal", "Política Tributaria", "Asesoría Gubernamental", "Investigación Tributaria"],
+    "education": [
+      {
+        "degree": "Doctor en Contabilidad y Finanzas",
+        "institution": "Universidad de Harvard",
+        "year": 2010
+      },
+      {
+        "degree": "Maestría en Economía",
+        "institution": "Universidad de Chicago",
+        "year": 2008
+      },
+      {
+        "degree": "Contador Público Colegiado",
+        "institution": "Colegio de Contadores Públicos de Lima",
+        "year": 2004
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certificación en Política Fiscal Internacional",
+        "issuer": "Fondo Monetario Internacional",
+        "year": 2018
+      },
+      {
+        "name": "Especialización en Tributación Internacional",
+        "issuer": "Organización para la Cooperación y el Desarrollo Económicos (OCDE)",
+        "year": 2015
+      }
+    ],
+    "work_experience": [
+      {
+        "position": "Director de Política Tributaria",
+        "company": "Ministerio de Economía y Finanzas",
+        "period": "2015 - 2020",
+        "description": "Dirigió la elaboración de políticas tributarias y representó al Perú en foros internacionales de tributación."
+      },
+      {
+        "position": "Consultor Senior",
+        "company": "Banco Mundial",
+        "period": "2012 - 2015",
+        "description": "Asesoró a gobiernos de América Latina en reformas tributarias y modernización de administraciones fiscales."
+      },
+      {
+        "position": "Profesor Principal",
+        "company": "Universidad del Pacífico",
+        "period": "2004 - 2012",
+        "description": "Enseñó tributación en programas de pregrado y posgrado, y dirigió investigaciones en política fiscal."
+      }
+    ],
+    "social_links": {
+      "linkedin": "https://linkedin.com/in/roberto-silva-tributacion",
+      "twitter": "https://twitter.com/roberto_silva_phd",
+      "website": "https://robertosilva.com"
+    },
+    "teaching_style": "Enfoque académico con base teórica sólida y análisis de políticas públicas. Combina la experiencia gubernamental con la investigación académica.",
+    "languages": ["Español", "Inglés", "Francés"],
+    "rating": 4.6,
+    "total_students": 1800,
+    "total_courses": 10,
+    "total_hours_taught": 400,
+    "response_time_hours": 12,
+    "is_verified": true,
+    "is_featured": true
+  },
+  {
+    "id": "inst5",
+    "name": "Ing. Patricia Morales",
+    "title": "Especialista en E-commerce y Tributación Digital",
+    "experience_years": 10,
+    "avatar_url": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&h=300&fit=crop&crop=face",
+    "bio": "Ingeniera de Sistemas especializada en tributación digital con 10 años de experiencia. Consultora de startups tecnológicas y e-commerce. Experta en facturación electrónica y nuevas obligaciones tributarias digitales.",
+    "specializations": ["Tributación Digital", "E-commerce", "Facturación Electrónica", "Startups Tecnológicas", "Transformación Digital"],
+    "education": [
+      {
+        "degree": "Maestría en Sistemas de Información",
+        "institution": "Universidad de Stanford",
+        "year": 2018
+      },
+      {
+        "degree": "Ingeniera de Sistemas",
+        "institution": "Universidad Nacional de Ingeniería",
+        "year": 2014
+      },
+      {
+        "degree": "Especialización en Tributación",
+        "institution": "Universidad de Lima",
+        "year": 2016
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certificación en Facturación Electrónica",
+        "issuer": "SUNAT",
+        "year": 2020
+      },
+      {
+        "name": "Especialización en E-commerce",
+        "issuer": "Google for Startups",
+        "year": 2019
+      },
+      {
+        "name": "Certificación en Cloud Computing",
+        "issuer": "Amazon Web Services",
+        "year": 2018
+      }
+    ],
+    "work_experience": [
+      {
+        "position": "CTO y Co-fundadora",
+        "company": "TaxTech Solutions",
+        "period": "2020 - Presente",
+        "description": "Desarrolla soluciones tecnológicas para automatización tributaria y facturación electrónica para empresas digitales."
+      },
+      {
+        "position": "Consultora Senior en Tributación Digital",
+        "company": "Deloitte Digital",
+        "period": "2018 - 2020",
+        "description": "Asesoró a empresas en transformación digital y cumplimiento de obligaciones tributarias digitales."
+      },
+      {
+        "position": "Desarrolladora Senior",
+        "company": "Rappi Perú",
+        "period": "2016 - 2018",
+        "description": "Desarrolló sistemas de facturación y cumplimiento tributario para la plataforma de delivery."
+      }
+    ],
+    "social_links": {
+      "linkedin": "https://linkedin.com/in/patricia-morales-tech",
+      "twitter": "https://twitter.com/patricia_morales_ing",
+      "github": "https://github.com/patricia-morales",
+      "website": "https://taxtechsolutions.com"
+    },
+    "teaching_style": "Metodología hands-on con proyectos prácticos y herramientas tecnológicas reales. Enfoque en la aplicación inmediata de conocimientos técnicos.",
+    "languages": ["Español", "Inglés"],
+    "rating": 4.9,
+    "total_students": 650,
+    "total_courses": 5,
+    "total_hours_taught": 180,
+    "response_time_hours": 2,
+    "is_verified": true,
+    "is_featured": false
+  },
+  {
+    "id": "inst6",
+    "name": "Dr. Luis Ramírez",
+    "title": "Ex-Fiscalizador SUNAT",
+    "experience_years": 25,
+    "avatar_url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&h=300&fit=crop&crop=face",
+    "bio": "Ex-fiscalizador de SUNAT con 15 años de experiencia en fiscalización y 10 años como consultor especializado en defensa fiscal. Conoce los procesos internos de SUNAT y las mejores estrategias de defensa.",
+    "specializations": ["Fiscalización SUNAT", "Defensa Fiscal", "Auditoría Tributaria", "Estrategias de Defensa", "Procedimientos Administrativos"],
+    "education": [
+      {
+        "degree": "Doctor en Derecho",
+        "institution": "Universidad Nacional Mayor de San Marcos",
+        "year": 2012
+      },
+      {
+        "degree": "Maestría en Administración Tributaria",
+        "institution": "SUNAT - Escuela Nacional de Administración Pública",
+        "year": 2008
+      },
+      {
+        "degree": "Contador Público Colegiado",
+        "institution": "Colegio de Contadores Públicos de Lima",
+        "year": 1999
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Especialización en Fiscalización Tributaria",
+        "issuer": "SUNAT - Escuela Nacional de Administración Pública",
+        "year": 2010
+      },
+      {
+        "name": "Certificación en Arbitraje Tributario",
+        "issuer": "Centro de Arbitraje de la Cámara de Comercio de Lima",
+        "year": 2015
+      }
+    ],
+    "work_experience": [
+      {
+        "position": "Socio Principal",
+        "company": "Ramírez & Asociados - Defensa Fiscal",
+        "period": "2015 - Presente",
+        "description": "Especializado en defensa fiscal y representación de empresas en procesos de fiscalización y apelaciones ante SUNAT."
+      },
+      {
+        "position": "Supervisor de Fiscalización",
+        "company": "SUNAT",
+        "period": "2005 - 2015",
+        "description": "Supervisó equipos de fiscalización en sectores de alto riesgo y desarrolló metodologías de control tributario."
+      },
+      {
+        "position": "Fiscalizador Senior",
+        "company": "SUNAT",
+        "period": "1999 - 2005",
+        "description": "Realizó fiscalizaciones en empresas de diversos sectores económicos y participó en operativos especiales."
+      }
+    ],
+    "social_links": {
+      "linkedin": "https://linkedin.com/in/luis-ramirez-defensa-fiscal",
+      "website": "https://ramirezasociados.com"
+    },
+    "teaching_style": "Metodología basada en casos reales de fiscalización y defensa. Comparte experiencias internas de SUNAT y estrategias probadas de defensa fiscal.",
+    "languages": ["Español"],
+    "rating": 4.8,
+    "total_students": 950,
+    "total_courses": 7,
+    "total_hours_taught": 250,
+    "response_time_hours": 6,
+    "is_verified": true,
+    "is_featured": false
+  }
+]
+
+

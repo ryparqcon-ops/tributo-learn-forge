@@ -6,6 +6,8 @@ import { Link } from "react-router-dom";
 import { ArrowRight, CheckCircle, Users, Award, Sparkles, Star } from "lucide-react";
 import coursesData from '@/lib/data/courses.json';
 import CompanyLogo from '@/components/ui/company-logos';
+import FeaturedInstructors from '@/components/instructor/featured-instructors';
+// import { DebugSupabase } from '@/components/DebugSupabase';
 
 const Index = () => {
   const courses = coursesData;
@@ -118,6 +120,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Featured Instructors Section */}
+      <FeaturedInstructors />
 
       {/* CTA Section */}
       <section className="relative py-24 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 text-white overflow-hidden">

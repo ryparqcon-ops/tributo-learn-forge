@@ -7,6 +7,7 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { CoursePreviewModal } from './CoursePreviewModal';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
+import type { CourseWithDetails } from '@/lib/types/supabase';
 
 interface Course {
   id: string;
@@ -38,7 +39,7 @@ interface Course {
 }
 
 interface CourseCardProps {
-  course: Course;
+  course: CourseWithDetails;
   className?: string;
   viewMode?: 'grid' | 'list';
 }
@@ -139,7 +140,7 @@ export function CourseCard({ course, className, viewMode = 'grid' }: CourseCardP
 
                 {/* Instructor */}
                 <p className="text-sm text-muted-foreground mb-4">
-                  Por <span className="font-medium text-foreground">{course.instructor.name}</span>
+                  Por <span className="font-medium text-foreground">{course.instructor_name}</span>
                 </p>
 
                 {/* Stats - Horizontal layout for list view */}
@@ -150,7 +151,7 @@ export function CourseCard({ course, className, viewMode = 'grid' }: CourseCardP
                   </div>
                   <div className="flex items-center space-x-1">
                     <BookOpen className="h-4 w-4" />
-                    <span>{course.lessons?.length || 0} lecciones</span>
+                    <span>{course.total_lessons || 0} lecciones</span>
                   </div>
                   <div className="flex items-center space-x-1">
                     <Users className="h-4 w-4" />
@@ -281,7 +282,7 @@ export function CourseCard({ course, className, viewMode = 'grid' }: CourseCardP
 
             {/* Instructor */}
             <p className="text-sm text-muted-foreground">
-              Por <span className="font-medium text-foreground">{course.instructor.name}</span>
+              Por <span className="font-medium text-foreground">{course.instructor_name}</span>
             </p>
 
             {/* Stats */}
@@ -292,7 +293,7 @@ export function CourseCard({ course, className, viewMode = 'grid' }: CourseCardP
               </div>
               <div className="flex items-center space-x-1">
                 <BookOpen className="h-4 w-4" />
-                <span>{course.lessons?.length || 0} lecciones</span>
+                <span>{course.total_lessons || 0} lecciones</span>
               </div>
               <div className="flex items-center space-x-1">
                 <Users className="h-4 w-4" />

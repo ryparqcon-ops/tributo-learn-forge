@@ -1,10 +1,17 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, Users, CheckCircle, Star } from 'lucide-react';
+import { Calendar, Clock, Users, CheckCircle, Star, BookOpen, Shield, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import BookingModal from '@/components/advisory/booking-modal';
+import { useAuthStore } from '@/lib/store/auth-store';
 
 const Advisory = () => {
+  const { isAuthenticated } = useAuthStore();
+  const [selectedService, setSelectedService] = useState(null);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+
   const advisoryServices = [
     {
       title: "Consulta Express",
@@ -44,6 +51,16 @@ const Advisory = () => {
       rating: 5
     }
   ];
+
+  const handleBookService = (service) => {
+    if (!isAuthenticated) {
+      // Redirigir al login si no está autenticado
+      window.location.href = '/login';
+      return;
+    }
+    setSelectedService(service);
+    setIsBookingModalOpen(true);
+  };
 
   return (
     <div className="min-h-screen py-8 sm:py-12">
@@ -94,7 +111,12 @@ const Advisory = () => {
                       </li>
                     ))}
                   </ul>
-                  <Button className="w-full btn-primary text-sm sm:text-base py-2 sm:py-3">Reservar Sesión</Button>
+                  <Button 
+                    className="w-full btn-primary text-sm sm:text-base py-2 sm:py-3"
+                    onClick={() => handleBookService(service)}
+                  >
+                    Reservar Sesión
+                  </Button>
                 </CardContent>
               </Card>
             </motion.div>
@@ -162,7 +184,121 @@ const Advisory = () => {
             ))}
           </div>
         </motion.div>
+
+        {/* Expertos Disponibles */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="mt-16"
+        >
+          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6 sm:mb-8 px-2">Nuestros Expertos</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+            {[
+              {
+                name: "Dr. Carlos Mendoza",
+                title: "Especialista en Tributación",
+                experience: "15 años",
+                expertise: ["Pymes", "SUNAT", "Asesoría Fiscal"],
+                rating: 4.9,
+                avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
+              },
+              {
+                name: "Dra. Andrea Vásquez",
+                title: "Abogada Tributaria",
+                experience: "12 años",
+                expertise: ["Derecho Tributario", "Litigios", "Cumplimiento"],
+                rating: 4.8,
+                avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face"
+              },
+              {
+                name: "CPC María Elena Torres",
+                title: "Especialista en Nóminas",
+                experience: "18 años",
+                expertise: ["Nóminas", "Tributación Laboral", "ESSALUD"],
+                rating: 4.7,
+                avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face"
+              }
+            ].map((expert, index) => (
+              <Card key={expert.name} className="text-center">
+                <CardContent className="p-6">
+                  <div className="w-20 h-20 mx-auto mb-4 rounded-full overflow-hidden">
+                    <img 
+                      src={expert.avatar} 
+                      alt={expert.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <h3 className="font-semibold text-lg mb-1">{expert.name}</h3>
+                  <p className="text-muted-foreground text-sm mb-2">{expert.title}</p>
+                  <p className="text-xs text-muted-foreground mb-3">{expert.experience} de experiencia</p>
+                  
+                  <div className="flex justify-center items-center space-x-1 mb-3">
+                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                    <span className="text-sm font-medium">{expert.rating}</span>
+                  </div>
+                  
+                  <div className="flex flex-wrap justify-center gap-1 mb-4">
+                    {expert.expertise.slice(0, 2).map((skill) => (
+                      <Badge key={skill} variant="secondary" className="text-xs">
+                        {skill}
+                      </Badge>
+                    ))}
+                  </div>
+                  
+                  <Button variant="outline" size="sm" className="w-full">
+                    Ver Perfil
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* CTA Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="mt-16 text-center"
+        >
+          <Card className="bg-gradient-to-r from-primary/10 to-purple-500/10 border-primary/20">
+            <CardContent className="py-12">
+              <h2 className="text-2xl sm:text-3xl font-bold mb-4">
+                ¿Listo para resolver tus dudas tributarias?
+              </h2>
+              <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+                Reserva una asesoría personalizada con nuestros expertos certificados 
+                y obtén respuestas claras a tus consultas tributarias.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button size="lg" onClick={() => handleBookService(advisoryServices[1])}>
+                  <BookOpen className="h-5 w-5 mr-2" />
+                  Reservar Asesoría
+                </Button>
+                <Button size="lg" variant="outline">
+                  <Shield className="h-5 w-5 mr-2" />
+                  Ver Garantías
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
+
+      {/* Booking Modal */}
+      {selectedService && (
+        <BookingModal
+          isOpen={isBookingModalOpen}
+          onClose={() => {
+            setIsBookingModalOpen(false);
+            setSelectedService(null);
+          }}
+          service={selectedService}
+        />
+      )}
     </div>
   );
 };

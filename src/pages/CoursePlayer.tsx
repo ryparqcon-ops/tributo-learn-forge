@@ -44,6 +44,9 @@ const CoursePlayer = () => {
   const course = coursesData.find(c => c.id === courseId);
   const courseLessons = (lessonsData as Lesson[]).filter(l => course?.lessons.includes(l.id))
     .sort((a, b) => a.order - b.order);
+  
+  // Use actual lessons count or fallback to course.lessons.length for consistency
+  const lessonCount = courseLessons.length || course.lessons.length;
 
   const currentLesson = courseLessons[currentLessonIndex];
 
@@ -138,7 +141,7 @@ const CoursePlayer = () => {
                       </div>
                       <div className="flex items-center gap-1">
                         <BookOpen className="h-4 w-4" />
-                        {courseLessons.length} lecciones
+                        {lessonCount} lecciones
                       </div>
                     </div>
                   </div>
