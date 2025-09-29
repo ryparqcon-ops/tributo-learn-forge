@@ -3,6 +3,7 @@ import type {
   Instructor, 
   InstructorInsert, 
   InstructorUpdate,
+  InstructorWithProfile,
   Profile,
   ProfileInsert,
   ProfileUpdate
@@ -14,18 +15,10 @@ import type {
 
 export class InstructorService {
   // Obtener todos los instructores activos
-  static async getActiveInstructors(): Promise<Instructor[]> {
+  static async getActiveInstructors(): Promise<InstructorWithProfile[]> {
     const { data, error } = await supabase
-      .from('instructors')
-      .select(`
-        *,
-        profiles!instructors_profile_id_fkey (
-          id,
-          full_name,
-          avatar_url,
-          email
-        )
-      `)
+      .from('instructor_with_profile')
+      .select('*')
       .eq('is_active', true)
       .order('created_at', { ascending: false })
 
@@ -38,18 +31,10 @@ export class InstructorService {
   }
 
   // Obtener instructores destacados
-  static async getFeaturedInstructors(): Promise<Instructor[]> {
+  static async getFeaturedInstructors(): Promise<InstructorWithProfile[]> {
     const { data, error } = await supabase
-      .from('instructors')
-      .select(`
-        *,
-        profiles!instructors_profile_id_fkey (
-          id,
-          full_name,
-          avatar_url,
-          email
-        )
-      `)
+      .from('instructor_with_profile')
+      .select('*')
       .eq('is_active', true)
       .eq('is_featured', true)
       .order('rating', { ascending: false })
@@ -64,26 +49,10 @@ export class InstructorService {
   }
 
   // Obtener instructor por ID
-  static async getInstructorById(id: string): Promise<Instructor | null> {
+  static async getInstructorById(id: string): Promise<InstructorWithProfile | null> {
     const { data, error } = await supabase
-      .from('instructors')
-      .select(`
-        *,
-        profiles!instructors_profile_id_fkey (
-          id,
-          full_name,
-          avatar_url,
-          email,
-          bio,
-          phone,
-          company,
-          job_title,
-          experience_years,
-          specializations,
-          social_links,
-          preferences
-        )
-      `)
+      .from('instructor_with_profile')
+      .select('*')
       .eq('id', id)
       .eq('is_active', true)
       .single()
@@ -100,26 +69,10 @@ export class InstructorService {
   }
 
   // Obtener instructor por profile_id
-  static async getInstructorByProfileId(profileId: string): Promise<Instructor | null> {
+  static async getInstructorByProfileId(profileId: string): Promise<InstructorWithProfile | null> {
     const { data, error } = await supabase
-      .from('instructors')
-      .select(`
-        *,
-        profiles!instructors_profile_id_fkey (
-          id,
-          full_name,
-          avatar_url,
-          email,
-          bio,
-          phone,
-          company,
-          job_title,
-          experience_years,
-          specializations,
-          social_links,
-          preferences
-        )
-      `)
+      .from('instructor_with_profile')
+      .select('*')
       .eq('profile_id', profileId)
       .eq('is_active', true)
       .single()
@@ -140,16 +93,19 @@ export class InstructorService {
     specializations?: string[]
     minRating?: number
     experienceMin?: number
-  }): Promise<Instructor[]> {
+  }): Promise<InstructorWithProfile[]> {
     let queryBuilder = supabase
       .from('instructors')
       .select(`
         *,
-        profiles!instructors_profile_id_fkey (
+        profiles (
           id,
           full_name,
           avatar_url,
-          email
+          bio,
+          phone,
+          country,
+          city
         )
       `)
       .eq('is_active', true)
@@ -189,11 +145,14 @@ export class InstructorService {
       .insert(instructorData)
       .select(`
         *,
-        profiles!instructors_profile_id_fkey (
+        profiles (
           id,
           full_name,
           avatar_url,
-          email
+          bio,
+          phone,
+          country,
+          city
         )
       `)
       .single()
@@ -214,11 +173,14 @@ export class InstructorService {
       .eq('id', id)
       .select(`
         *,
-        profiles!instructors_profile_id_fkey (
+        profiles (
           id,
           full_name,
           avatar_url,
-          email
+          bio,
+          phone,
+          country,
+          city
         )
       `)
       .single()

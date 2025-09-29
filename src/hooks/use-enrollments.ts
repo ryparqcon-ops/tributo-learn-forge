@@ -147,9 +147,25 @@ export function useCompletedLessons(courseId: string) {
   const [completedLessons, setCompletedLessons] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [refreshTrigger, setRefreshTrigger] = useState(0)
+
+  const refetch = () => {
+    setRefreshTrigger(prev => prev + 1)
+  }
+
+  const addCompletedLessonOptimistic = (lessonId: string) => {
+    setCompletedLessons(prev => [...new Set([...prev, lessonId])])
+  }
 
   useEffect(() => {
-    if (!courseId) return
+    if (!courseId || courseId.trim() === '') {
+      console.log('⚠️ useCompletedLessons: courseId no proporcionado o vacío');
+      setCompletedLessons([])
+      setLoading(false)
+      return
+    }
+
+    console.log('🔄 useCompletedLessons: Iniciando carga para courseId:', courseId);
 
     const fetchCompletedLessons = async () => {
       try {
@@ -158,24 +174,27 @@ export function useCompletedLessons(courseId: string) {
         
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) {
+          console.log('⚠️ useCompletedLessons: Usuario no autenticado');
           setCompletedLessons([])
           return
         }
 
+        console.log('👤 useCompletedLessons: Usuario encontrado:', user.id);
         const data = await LessonProgressService.getCompletedLessons(user.id, courseId)
+        console.log('✅ useCompletedLessons: Lecciones completadas obtenidas:', data);
         setCompletedLessons(data)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error al cargar las lecciones completadas')
-        console.error('Error fetching completed lessons:', err)
+        console.error('❌ useCompletedLessons: Error fetching completed lessons:', err)
       } finally {
         setLoading(false)
       }
     }
 
     fetchCompletedLessons()
-  }, [courseId])
+  }, [courseId, refreshTrigger])
 
-  return { completedLessons, loading, error }
+  return { completedLessons, loading, error, refetch, addCompletedLessonOptimistic }
 }
 
 export function useUserProgressStats() {

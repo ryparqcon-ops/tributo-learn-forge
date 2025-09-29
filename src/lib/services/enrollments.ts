@@ -20,9 +20,9 @@ export class EnrollmentService {
   // Obtener inscripciones del usuario actual
   static async getUserEnrollments(userId: string): Promise<UserProgress[]> {
     const { data, error } = await supabase
-      .from('user_progress')
+      .from('enrollments')
       .select('*')
-      .eq('user_id', userId)
+      .eq('student_id', userId)
       .order('enrolled_at', { ascending: false })
 
     if (error) {
@@ -38,7 +38,7 @@ export class EnrollmentService {
     const { data, error } = await supabase
       .from('enrollments')
       .select('id')
-      .eq('user_id', userId)
+      .eq('student_id', userId)
       .eq('course_id', courseId)
       .eq('is_active', true)
       .single()
@@ -59,7 +59,7 @@ export class EnrollmentService {
     const { data, error } = await supabase
       .from('enrollments')
       .insert({
-        user_id: userId,
+        student_id: userId,
         course_id: courseId
       })
       .select()
@@ -78,7 +78,7 @@ export class EnrollmentService {
     const { error } = await supabase
       .from('enrollments')
       .update({ is_active: false })
-      .eq('user_id', userId)
+      .eq('student_id', userId)
       .eq('course_id', courseId)
 
     if (error) {
@@ -92,7 +92,7 @@ export class EnrollmentService {
     const { data, error } = await supabase
       .from('user_progress')
       .select('*')
-      .eq('user_id', userId)
+      .eq('student_id', userId)
       .eq('course_id', courseId)
       .single()
 
@@ -112,7 +112,7 @@ export class EnrollmentService {
     const { error } = await supabase
       .from('enrollments')
       .update({ last_accessed_at: new Date().toISOString() })
-      .eq('user_id', userId)
+      .eq('student_id', userId)
       .eq('course_id', courseId)
 
     if (error) {
@@ -132,13 +132,13 @@ export class LessonProgressService {
     let query = supabase
       .from('lesson_progress')
       .select('*')
-      .eq('user_id', userId)
+      .eq('student_id', userId)
 
     if (courseId) {
       query = query.eq('course_id', courseId)
     }
 
-    const { data, error } = await query.order('last_watched_at', { ascending: false })
+    const { data, error } = await query.order('completed_at', { ascending: false })
 
     if (error) {
       console.error('Error fetching lesson progress:', error)
@@ -150,25 +150,56 @@ export class LessonProgressService {
 
   // Marcar lección como completada
   static async completeLesson(userId: string, lessonId: string, courseId: string): Promise<LessonProgress> {
-    const { data, error } = await supabase
+    // Primero verificar si ya existe
+    const { data: existing } = await supabase
       .from('lesson_progress')
-      .upsert({
-        user_id: userId,
-        lesson_id: lessonId,
-        course_id: courseId,
-        is_completed: true,
-        completed_at: new Date().toISOString(),
-        last_watched_at: new Date().toISOString()
-      })
-      .select()
+      .select('*')
+      .eq('student_id', userId)
+      .eq('lesson_id', lessonId)
       .single()
 
-    if (error) {
-      console.error('Error completing lesson:', error)
-      throw new Error('Error al marcar la lección como completada')
-    }
+    if (existing) {
+      // Si ya existe, actualizarlo
+      const { data, error } = await supabase
+        .from('lesson_progress')
+        .update({
+          is_completed: true,
+          completed_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .eq('student_id', userId)
+        .eq('lesson_id', lessonId)
+        .select()
+        .single()
 
-    return data
+      if (error) {
+        console.error('Error updating lesson:', error)
+        throw new Error('Error al actualizar la lección como completada')
+      }
+
+      return data
+    } else {
+      // Si no existe, crear nuevo
+      const { data, error } = await supabase
+        .from('lesson_progress')
+        .insert({
+          student_id: userId,
+          lesson_id: lessonId,
+          course_id: courseId,
+          is_completed: true,
+          completed_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .select()
+        .single()
+
+      if (error) {
+        console.error('Error creating lesson progress:', error)
+        throw new Error('Error al crear el progreso de la lección')
+      }
+
+      return data
+    }
   }
 
   // Actualizar tiempo de visualización
@@ -176,11 +207,11 @@ export class LessonProgressService {
     const { data, error } = await supabase
       .from('lesson_progress')
       .upsert({
-        user_id: userId,
+        student_id: userId,
         lesson_id: lessonId,
         course_id: courseId,
-        watch_time_seconds: watchTimeSeconds,
-        last_watched_at: new Date().toISOString()
+        watched_duration: watchTimeSeconds,
+        completed_at: new Date().toISOString()
       })
       .select()
       .single()
@@ -198,7 +229,7 @@ export class LessonProgressService {
     const { data, error } = await supabase
       .from('lesson_progress')
       .select('is_completed')
-      .eq('user_id', userId)
+      .eq('student_id', userId)
       .eq('lesson_id', lessonId)
       .single()
 
@@ -218,7 +249,7 @@ export class LessonProgressService {
     const { data, error } = await supabase
       .from('lesson_progress')
       .select('lesson_id')
-      .eq('user_id', userId)
+      .eq('student_id', userId)
       .eq('course_id', courseId)
       .eq('is_completed', true)
 
@@ -248,7 +279,7 @@ export class LessonProgressService {
     const completedCourses = enrollments.filter(e => e.progress_percentage === 100).length
     const totalLessons = enrollments.reduce((sum, e) => sum + e.total_lessons, 0)
     const completedLessons = lessonProgress.filter(lp => lp.is_completed).length
-    const totalWatchTime = lessonProgress.reduce((sum, lp) => sum + lp.watch_time_seconds, 0)
+    const totalWatchTime = lessonProgress.reduce((sum, lp) => sum + (lp.watched_duration || 0), 0)
 
     return {
       totalCourses,
@@ -293,7 +324,7 @@ export class ReviewService {
     const { data, error } = await supabase
       .from('reviews')
       .select('*')
-      .eq('user_id', userId)
+      .eq('student_id', userId)
       .eq('course_id', courseId)
       .single()
 
@@ -329,7 +360,7 @@ export class ReviewService {
     const { error } = await supabase
       .from('reviews')
       .delete()
-      .eq('user_id', userId)
+      .eq('student_id', userId)
       .eq('course_id', courseId)
 
     if (error) {

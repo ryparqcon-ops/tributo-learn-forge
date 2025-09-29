@@ -22,22 +22,26 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useAuthStore } from '@/lib/store/auth-store';
+import { useCreateConsultationSession } from '@/hooks/use-consultations';
+import type { ConsultationWithInstructor } from '@/lib/services/consultations';
 
 interface BookingModalProps {
   isOpen: boolean;
   onClose: () => void;
-  service: {
-    title: string;
-    duration: string;
-    price: string;
-    description: string;
-    features: string[];
-  };
+  consultations: ConsultationWithInstructor[];
 }
 
-const BookingModal = ({ isOpen, onClose, service }: BookingModalProps) => {
+const BookingModal = ({ isOpen, onClose, consultations }: BookingModalProps) => {
   const { user, isAuthenticated } = useAuthStore();
+  const { createSession, loading: creatingSession, error: sessionError } = useCreateConsultationSession();
+
+  // Debug logs
+  console.log('BookingModal - isOpen:', isOpen);
+  console.log('BookingModal - consultations:', consultations);
+  console.log('BookingModal - user:', user);
+  console.log('BookingModal - isAuthenticated:', isAuthenticated);
   const [step, setStep] = useState(1);
+  const [selectedConsultation, setSelectedConsultation] = useState<ConsultationWithInstructor | null>(null);
   const [formData, setFormData] = useState({
     name: user?.name || '',
     email: user?.email || '',
@@ -85,20 +89,55 @@ const BookingModal = ({ isOpen, onClose, service }: BookingModalProps) => {
   };
 
   const handleSubmit = async () => {
+    if (!selectedConsultation) {
+      // Si no hay consulta específica, usar la primera disponible
+      const consultation = consultations?.[0];
+      if (!consultation) {
+        alert('No hay asesorías disponibles');
+        return;
+      }
+      setSelectedConsultation(consultation);
+    }
+
+    const consultation = selectedConsultation || consultations?.[0];
+    if (!consultation) return;
+
     setIsSubmitting(true);
     
-    // Simular envío de reserva
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    setIsSubmitting(false);
-    setIsSuccess(true);
-    
-    // Cerrar modal después de 3 segundos
-    setTimeout(() => {
-      onClose();
-      setStep(1);
-      setIsSuccess(false);
-    }, 3000);
+    try {
+      // Crear la fecha y hora completa
+      const scheduledDateTime = new Date(`${formData.preferredDate}T${formData.preferredTime}:00`);
+      
+      const sessionData = {
+        consultation_id: consultation.id,
+        scheduled_at: scheduledDateTime.toISOString(),
+        student_name: formData.name,
+        student_email: formData.email,
+        student_phone: formData.phone,
+        company: formData.company,
+        subject: formData.subject,
+        description: formData.description,
+        payment_method: formData.paymentMethod,
+        special_requirements: formData.specialRequirements
+      };
+
+      await createSession(sessionData);
+      setIsSuccess(true);
+      
+      // Cerrar modal después de 3 segundos
+      setTimeout(() => {
+        onClose();
+        setStep(1);
+        setIsSuccess(false);
+        setSelectedConsultation(null);
+      }, 3000);
+      
+    } catch (error) {
+      console.error('Error creating consultation session:', error);
+      alert('Error al crear la reserva. Por favor, inténtalo de nuevo.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const formatPrice = (price: string) => {
@@ -127,7 +166,7 @@ const BookingModal = ({ isOpen, onClose, service }: BookingModalProps) => {
           <div className="flex items-center justify-between p-6 border-b">
             <div>
               <h2 className="text-xl font-semibold">Reservar Asesoría</h2>
-              <p className="text-sm text-muted-foreground">{service.title}</p>
+              <p className="text-sm text-muted-foreground">Selecciona tu asesor y tipo de asesoría</p>
             </div>
             <Button variant="ghost" size="sm" onClick={onClose}>
               <X className="h-4 w-4" />
@@ -181,11 +220,11 @@ const BookingModal = ({ isOpen, onClose, service }: BookingModalProps) => {
                 <div className="bg-muted/50 rounded-lg p-4 text-left">
                   <h4 className="font-medium mb-2">Detalles de la reserva:</h4>
                   <div className="space-y-1 text-sm">
-                    <p><strong>Servicio:</strong> {service.title}</p>
+                    <p><strong>Servicio:</strong> {selectedConsultation?.title || 'Asesoría'}</p>
                     <p><strong>Fecha:</strong> {formData.preferredDate}</p>
                     <p><strong>Hora:</strong> {formData.preferredTime}</p>
-                    <p><strong>Duración:</strong> {service.duration}</p>
-                    <p><strong>Precio:</strong> {service.price}</p>
+                    <p><strong>Duración:</strong> {selectedConsultation ? `${selectedConsultation.duration_hours} hora${selectedConsultation.duration_hours > 1 ? 's' : ''}` : '1 hora'}</p>
+                    <p><strong>Precio:</strong> S/ {selectedConsultation ? Math.round(selectedConsultation.price_per_hour * selectedConsultation.duration_hours) : '0'}</p>
                   </div>
                 </div>
               </motion.div>
@@ -275,6 +314,59 @@ const BookingModal = ({ isOpen, onClose, service }: BookingModalProps) => {
                     animate={{ x: 0, opacity: 1 }}
                     className="space-y-6"
                   >
+                    {/* Selección de Instructor/Asesoría específica */}
+                    <div>
+                      <h4 className="font-medium mb-3">Selecciona tu asesor y tipo de asesoría</h4>
+                      <div className="space-y-3">
+                        {consultations.map((consultation) => (
+                          <div
+                            key={consultation.id}
+                            className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                              selectedConsultation?.id === consultation.id
+                                ? 'border-primary bg-primary/5'
+                                : 'border-muted hover:border-primary/50'
+                            }`}
+                            onClick={() => setSelectedConsultation(consultation)}
+                          >
+                            <div className="flex justify-between items-start">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <h5 className="font-medium">{consultation.instructor.profile?.full_name}</h5>
+                                  {consultation.instructor.is_verified && (
+                                    <Badge variant="secondary" className="text-xs">
+                                      ✓ Verificado
+                                    </Badge>
+                                  )}
+                                </div>
+                                <p className="text-sm text-muted-foreground mb-1">{consultation.instructor.title}</p>
+                                <p className="text-xs text-muted-foreground mb-2">{consultation.instructor.experience_years} años de experiencia</p>
+                                
+                                {/* Información de la asesoría */}
+                                <div className="bg-muted/50 p-2 rounded text-sm">
+                                  <p className="font-medium text-primary">{consultation.title}</p>
+                                  <p className="text-xs text-muted-foreground mt-1">{consultation.description}</p>
+                                </div>
+                              </div>
+                              <div className="text-right ml-4">
+                                <p className="font-semibold text-lg">S/ {Math.round(consultation.price_per_hour * consultation.duration_hours)}</p>
+                                <p className="text-xs text-muted-foreground">{consultation.duration_hours} hora{consultation.duration_hours > 1 ? 's' : ''}</p>
+                                <p className="text-xs text-muted-foreground">S/ {consultation.price_per_hour}/hora</p>
+                              </div>
+                            </div>
+                            {consultation.instructor.specializations && (
+                              <div className="flex flex-wrap gap-1 mt-3">
+                                {consultation.instructor.specializations.slice(0, 3).map((spec) => (
+                                  <Badge key={spec} variant="secondary" className="text-xs">
+                                    {spec}
+                                  </Badge>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    
                     <div>
                       <h3 className="text-lg font-semibold mb-4">Selecciona tu horario</h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -349,16 +441,16 @@ const BookingModal = ({ isOpen, onClose, service }: BookingModalProps) => {
                       {/* Resumen del servicio */}
                       <Card className="mb-6">
                         <CardHeader className="pb-3">
-                          <CardTitle className="text-base">{service.title}</CardTitle>
+                          <CardTitle className="text-base">{selectedConsultation?.title || 'Asesoría'}</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-2">
                           <div className="flex justify-between text-sm">
                             <span>Duración:</span>
-                            <span>{service.duration}</span>
+                            <span>{selectedConsultation ? `${selectedConsultation.duration_hours} hora${selectedConsultation.duration_hours > 1 ? 's' : ''}` : '1 hora'}</span>
                           </div>
                           <div className="flex justify-between text-sm">
                             <span>Precio:</span>
-                            <span className="font-semibold text-primary">{service.price}</span>
+                            <span className="font-semibold text-primary">S/ {selectedConsultation ? Math.round(selectedConsultation.price_per_hour * selectedConsultation.duration_hours) : '0'}</span>
                           </div>
                         </CardContent>
                       </Card>
@@ -443,5 +535,29 @@ const BookingModal = ({ isOpen, onClose, service }: BookingModalProps) => {
 };
 
 export default BookingModal;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

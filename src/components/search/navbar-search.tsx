@@ -4,20 +4,8 @@ import { Search, X, Clock, User } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { motion, AnimatePresence } from 'framer-motion';
-import coursesData from '@/lib/data/courses.json';
-
-interface Course {
-  id: string;
-  title: string;
-  summary: string;
-  instructor: {
-    name: string;
-  };
-  duration_minutes: number;
-  level: string;
-  tags: string[];
-  thumbnail: string;
-}
+import { useCourses } from '@/hooks/use-courses';
+import type { CourseWithDetails } from '@/lib/types/supabase';
 
 interface NavbarSearchProps {
   placeholder?: string;
@@ -31,21 +19,24 @@ export const NavbarSearch = ({
   onSearch
 }: NavbarSearchProps) => {
   const [query, setQuery] = useState('');
-  const [suggestions, setSuggestions] = useState<Course[]>([]);
+  const [suggestions, setSuggestions] = useState<CourseWithDetails[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  
+  // Usar el hook de Supabase
+  const { courses, isLoading } = useCourses();
 
   // Debounced search
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      if (query.length >= 2 && coursesData && coursesData.length > 0) {
-        const filtered = coursesData.filter((course: Course) => 
-          course.title.toLowerCase().includes(query.toLowerCase()) ||
-          course.summary.toLowerCase().includes(query.toLowerCase()) ||
-          course.instructor.name.toLowerCase().includes(query.toLowerCase()) ||
+      if (query.length >= 2 && courses && courses.length > 0) {
+        const filtered = courses.filter((course: CourseWithDetails) => 
+          course.title?.toLowerCase().includes(query.toLowerCase()) ||
+          course.short_description?.toLowerCase().includes(query.toLowerCase()) ||
+          course.instructor_name?.toLowerCase().includes(query.toLowerCase()) ||
           (course.tags && course.tags.some((tag: string) => tag.toLowerCase().includes(query.toLowerCase())))
         ).slice(0, 4); // Limit to 4 suggestions for navbar
         
@@ -58,7 +49,7 @@ export const NavbarSearch = ({
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [query]);
+  }, [query, courses]);
 
   // Handle keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -91,11 +82,11 @@ export const NavbarSearch = ({
     }
   };
 
-  const handleCourseSelect = (course: Course) => {
+  const handleCourseSelect = (course: CourseWithDetails) => {
     setQuery('');
     setShowSuggestions(false);
     setSelectedIndex(-1);
-    navigate(`/course/${course.id}`);
+    navigate(`/course/${course.slug}`);
   };
 
   const handleSearch = () => {
@@ -120,10 +111,17 @@ export const NavbarSearch = ({
     inputRef.current?.focus();
   };
 
-  const formatDuration = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+  const formatDuration = (hours: number) => {
+    if (hours >= 1) {
+      const wholeHours = Math.floor(hours);
+      const minutes = Math.round((hours - wholeHours) * 60);
+      if (minutes > 0) {
+        return `${wholeHours}h ${minutes}m`;
+      }
+      return `${wholeHours}h`;
+    }
+    const minutes = Math.round(hours * 60);
+    return `${minutes}m`;
   };
 
   // Close suggestions when clicking outside
@@ -196,8 +194,8 @@ export const NavbarSearch = ({
                 >
                   <div className="flex items-start gap-3 sm:gap-4">
                     <img
-                      src={course.thumbnail}
-                      alt={course.title}
+                      src={course.thumbnail_url || '/placeholder.svg'}
+                      alt={course.title || 'Curso'}
                       className="w-12 h-8 sm:w-10 sm:h-7 object-cover rounded flex-shrink-0"
                     />
                     <div className="flex-1 min-w-0">
@@ -207,11 +205,11 @@ export const NavbarSearch = ({
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mt-2 text-xs text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <User className="h-3 w-3 flex-shrink-0" />
-                          <span className="truncate">{course.instructor.name}</span>
+                          <span className="truncate">{course.instructor_name}</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <Clock className="h-3 w-3 flex-shrink-0" />
-                          <span>{formatDuration(course.duration_minutes)}</span>
+                          <span>{formatDuration(course.duration_hours || 0)}</span>
                         </div>
                         <Badge variant="outline" className="text-xs w-fit">
                           {course.level}

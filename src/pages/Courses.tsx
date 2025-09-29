@@ -46,8 +46,8 @@ const Courses = () => {
     // Search filter (handled by CourseSearch component)
     const matchesSearch = !searchQuery || 
       course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.instructor_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.short_description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.instructor_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       course.tags.some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase()));
     
     // Tag filter
@@ -224,11 +224,7 @@ const Courses = () => {
         </motion.div>
 
         {/* Loading State */}
-        {isLoading && (
-          <div className="flex justify-center py-12">
-            <LoadingSpinner />
-          </div>
-        )}
+        {isLoading && <LoadingSpinner size="lg" />}
 
         {/* Error State */}
         {error && (
