@@ -132,14 +132,34 @@ export class NewSchemaMigration {
     
     for (const instructor of instructorsData) {
       try {
-        // Crear perfil
-        const profile = {
+        // Primero crear usuario
+        const user = {
           id: instructor.id,
           email: `instructor-${instructor.id}@tributo-learn.com`,
+          role: 'instructor',
+          is_active: true,
+          email_verified: true
+        }
+        
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .insert(user)
+          .select()
+          .single()
+        
+        if (userError) {
+          console.error(`❌ Error creando usuario ${instructor.name}:`, userError)
+          continue
+        }
+        
+        console.log(`✅ Usuario creado: ${instructor.name}`)
+        
+        // Luego crear perfil
+        const profile = {
+          id: instructor.id,
           full_name: instructor.name,
           avatar_url: instructor.avatar_url,
           bio: instructor.bio,
-          role: 'instructor',
           is_instructor: true,
           is_verified: instructor.is_verified
         }
@@ -172,8 +192,7 @@ export class NewSchemaMigration {
           response_time_hours: instructor.response_time_hours,
           is_verified: instructor.is_verified,
           is_featured: instructor.is_featured,
-          is_active: true,
-          consultation_rate: instructor.consultation_rate
+          is_active: true
         }
         
         const { data: instructorDataResult, error: instructorError } = await supabase
@@ -207,16 +226,14 @@ export class NewSchemaMigration {
         instructor_id: '550e8400-e29b-41d4-a716-446655440004',
         category_id: '550e8400-e29b-41d4-a716-446655440001',
         price: 299.99,
-        original_price: 399.99,
         level: 'beginner',
-        language: 'es',
         duration_hours: 8,
         thumbnail_url: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop',
-        preview_video_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        preview_video: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
         is_published: true,
         is_featured: true,
         tags: ['tributación', 'pymes', 'básico'],
-        learning_objectives: [
+        learning_outcomes: [
           'Comprender las obligaciones tributarias básicas',
           'Aprender a calcular impuestos principales',
           'Conocer los plazos y procedimientos'
@@ -231,16 +248,14 @@ export class NewSchemaMigration {
         instructor_id: '550e8400-e29b-41d4-a716-446655440004',
         category_id: '550e8400-e29b-41d4-a716-446655440002',
         price: 499.99,
-        original_price: 599.99,
         level: 'advanced',
-        language: 'es',
         duration_hours: 12,
         thumbnail_url: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop',
-        preview_video_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        preview_video: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
         is_published: true,
         is_featured: true,
         tags: ['iva', 'avanzado', 'jurisprudencia'],
-        learning_objectives: [
+        learning_outcomes: [
           'Dominar casos complejos de IVA',
           'Analizar jurisprudencia relevante',
           'Aplicar criterios SUNAT'
@@ -277,7 +292,6 @@ export class NewSchemaMigration {
         course_id: '550e8400-e29b-41d4-a716-446655440006',
         title: 'Introducción a las obligaciones tributarias',
         description: 'Conceptos básicos de las obligaciones tributarias para empresas',
-        content: '# Introducción a las obligaciones tributarias\n\nEn esta lección aprenderás los conceptos fundamentales...',
         video_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
         duration_minutes: 45,
         order_index: 1,
@@ -289,7 +303,6 @@ export class NewSchemaMigration {
         course_id: '550e8400-e29b-41d4-a716-446655440006',
         title: 'Registro contable y comprobantes',
         description: 'Cómo llevar el registro contable y manejar comprobantes de pago',
-        content: '# Registro contable y comprobantes\n\nAprende a llevar un registro contable adecuado...',
         video_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
         duration_minutes: 60,
         order_index: 2,
@@ -301,7 +314,6 @@ export class NewSchemaMigration {
         course_id: '550e8400-e29b-41d4-a716-446655440007',
         title: 'Conceptos avanzados de IVA',
         description: 'Conceptos avanzados y casos especiales de IVA',
-        content: '# Conceptos avanzados de IVA\n\nExploramos casos complejos de IVA...',
         video_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
         duration_minutes: 90,
         order_index: 1,

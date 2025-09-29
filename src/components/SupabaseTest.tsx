@@ -343,6 +343,110 @@ export function SupabaseTest() {
     }
   }
 
+  // Función para diagnóstico de instructor
+  const handleInstructorDiagnostic = async () => {
+    try {
+      setIsMigrating(true)
+      setMigrationStatus('Iniciando diagnóstico de instructor...')
+      
+      console.log('🔍 Iniciando diagnóstico de creación de instructor...')
+      
+      // 1. Crear usuario
+      console.log('1️⃣ Creando usuario...')
+      const user = {
+        id: '550e8400-e29b-41d4-a716-446655440004',
+        email: 'instructor-test@tributo-learn.com',
+        role: 'instructor',
+        is_active: true,
+        email_verified: true
+      }
+      
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .insert(user)
+        .select()
+        .single()
+      
+      if (userError) {
+        console.error('❌ Error creando usuario:', userError)
+        setMigrationStatus(`Error creando usuario: ${userError.message}`)
+        return
+      }
+      
+      console.log('✅ Usuario creado:', userData)
+      setMigrationStatus('Usuario creado exitosamente...')
+      
+      // 2. Crear perfil
+      console.log('2️⃣ Creando perfil...')
+      const profile = {
+        id: '550e8400-e29b-41d4-a716-446655440004',
+        full_name: 'Dr. Carlos Mendoza Test',
+        avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
+        bio: 'Experto en tributación empresarial',
+        is_instructor: true,
+        is_verified: true
+      }
+      
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .insert(profile)
+        .select()
+        .single()
+      
+      if (profileError) {
+        console.error('❌ Error creando perfil:', profileError)
+        setMigrationStatus(`Error creando perfil: ${profileError.message}`)
+        return
+      }
+      
+      console.log('✅ Perfil creado:', profileData)
+      setMigrationStatus('Perfil creado exitosamente...')
+      
+      // 3. Crear instructor
+      console.log('3️⃣ Creando instructor...')
+      const instructorData = {
+        profile_id: '550e8400-e29b-41d4-a716-446655440004',
+        title: 'Especialista en Tributación',
+        bio: 'Experto en tributación empresarial con más de 15 años de experiencia',
+        specializations: ['Tributación Empresarial', 'Planillas'],
+        experience_years: 15,
+        social_links: {
+          linkedin: 'https://linkedin.com/in/carlos-mendoza',
+          twitter: 'https://twitter.com/carlos_mendoza'
+        },
+        rating: 4.8,
+        total_students: 1200,
+        total_courses: 8,
+        total_hours_taught: 240,
+        response_time_hours: 2,
+        is_verified: true,
+        is_featured: true,
+        is_active: true
+      }
+      
+      const { data: instructorDataResult, error: instructorError } = await supabase
+        .from('instructors')
+        .insert(instructorData)
+        .select()
+        .single()
+      
+      if (instructorError) {
+        console.error('❌ Error creando instructor:', instructorError)
+        setMigrationStatus(`Error creando instructor: ${instructorError.message}`)
+        return
+      }
+      
+      console.log('✅ Instructor creado:', instructorDataResult)
+      setMigrationStatus('🎉 ¡Diagnóstico completado exitosamente! Instructor creado correctamente.')
+      
+    } catch (error) {
+      console.error('❌ Error general:', error)
+      setMigrationStatus(`Error general: ${error instanceof Error ? error.message : 'Error desconocido'}`)
+    } finally {
+      setIsMigrating(false)
+    }
+  }
+
   // Función para migrar categorías
   const migrateCategoriesFixed = async () => {
     console.log('🔄 Migrando categorías...')
@@ -839,34 +943,52 @@ export function SupabaseTest() {
             Migra los datos de ejemplo a Supabase para probar la funcionalidad completa.
           </p>
           
-          <div className="flex gap-2">
+          <div className="space-y-2">
+            <div className="flex gap-2">
+              <Button 
+                onClick={handleMigration} 
+                disabled={isMigrating}
+                className="flex-1"
+              >
+                {isMigrating ? (
+                  <>
+                    <LoadingSpinner className="mr-2 h-4 w-4" />
+                    Migrando...
+                  </>
+                ) : (
+                  'Migrar Datos (Actual)'
+                )}
+              </Button>
+              <Button 
+                onClick={handleNewSchemaMigration} 
+                disabled={isMigrating}
+                variant="outline"
+                className="flex-1"
+              >
+                {isMigrating ? (
+                  <>
+                    <LoadingSpinner className="mr-2 h-4 w-4" />
+                    Migrando...
+                  </>
+                ) : (
+                  'Nueva Estructura'
+                )}
+              </Button>
+            </div>
+            
             <Button 
-              onClick={handleMigration} 
+              onClick={handleInstructorDiagnostic} 
               disabled={isMigrating}
-              className="flex-1"
+              variant="secondary"
+              className="w-full"
             >
               {isMigrating ? (
                 <>
                   <LoadingSpinner className="mr-2 h-4 w-4" />
-                  Migrando...
+                  Diagnosticando...
                 </>
               ) : (
-                'Migrar Datos (Actual)'
-              )}
-            </Button>
-            <Button 
-              onClick={handleNewSchemaMigration} 
-              disabled={isMigrating}
-              variant="outline"
-              className="flex-1"
-            >
-              {isMigrating ? (
-                <>
-                  <LoadingSpinner className="mr-2 h-4 w-4" />
-                  Migrando...
-                </>
-              ) : (
-                'Nueva Estructura'
+                '🔍 Diagnóstico de Instructor'
               )}
             </Button>
           </div>

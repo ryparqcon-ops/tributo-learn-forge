@@ -5,56 +5,178 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
-import { useAuthStore } from '@/lib/store/auth-store';
-import coursesData from '@/lib/data/courses.json';
-import lessonsData from '@/lib/data/lessons.json';
+import { useDashboard } from '@/hooks/use-dashboard';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { useMemo } from 'react';
 
 export function DashboardCourses() {
-  const { user } = useAuthStore();
-  
-  // Get enrolled courses from user data
-  const enrolledCourseIds = user?.enrolled || [];
-  const enrolledCourses = coursesData.filter(course => enrolledCourseIds.includes(course.id));
-  
-  // Calculate progress and get lesson data
-  const coursesWithProgress = enrolledCourses.map(course => {
-    const courseLessons = (lessonsData as any[]).filter(l => course.lessons.includes(l.id));
-    // Use actual lessons count or fallback to course.lessons.length for consistency
-    const totalLessons = courseLessons.length || course.lessons.length;
-    const progress = user?.progress?.[course.id] || 0;
-    const completedLessons = Math.floor((progress / 100) * totalLessons);
-    
-    // Get next lesson
-    const nextLesson = courseLessons.find(lesson => 
-      courseLessons.indexOf(lesson) === completedLessons
-    );
-    
-    return {
-      ...course,
-      totalLessons,
-      completedLessons,
-      progress,
-      nextLesson: nextLesson ? {
-        id: nextLesson.id,
-        title: nextLesson.title,
-        duration: nextLesson.duration_minutes
-      } : null,
-      lastAccessed: "2024-01-15", // Mock data
-      timeSpent: Math.floor(course.duration_minutes * (progress / 100)) // Calculate based on progress
-    };
-  });
+  const { courses: coursesWithProgress, stats, loading, error } = useDashboard();
 
-  const formatTimeSpent = (minutes: number) => {
+  const formatTimeSpent = useMemo(() => (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
-  };
+  }, []);
 
-  // Calculate overall statistics
-  const totalLessons = coursesWithProgress.reduce((sum, course) => sum + course.totalLessons, 0);
-  const completedLessons = coursesWithProgress.reduce((sum, course) => sum + course.completedLessons, 0);
-  const overallProgress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
-  const totalTimeSpent = coursesWithProgress.reduce((sum, course) => sum + course.timeSpent, 0);
+  // Memoize the course cards to prevent unnecessary re-renders
+  const courseCards = useMemo(() => {
+    return coursesWithProgress.map((course, index: number) => (
+      <motion.div
+        key={course.id}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: index * 0.1 }}
+      >
+        <Card className="hover-lift mx-2 sm:mx-0">
+          {/* Mobile Layout */}
+          <div className="block sm:hidden">
+            <div className="p-4">
+              <div className="flex items-start space-x-3 mb-3">
+                <img
+                  src={course.thumbnail_url || '/placeholder.svg'}
+                  alt={course.title}
+                  className="w-16 h-12 rounded-lg object-cover flex-shrink-0"
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className="font-semibold text-sm leading-tight pr-2 line-clamp-2">{course.title}</h3>
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      <Badge variant="outline" className="text-xs px-2 py-1">
+                        {course.level}
+                      </Badge>
+                      <div className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
+                        {course.progress}%
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 mb-2">
+                    <p className="text-xs text-muted-foreground">
+                      Por {course.instructor_name}
+                    </p>
+                    <div className="flex items-center gap-1">
+                      <Star className="h-3 w-3 fill-current text-yellow-400" />
+                      <span className="text-xs text-muted-foreground">{course.rating}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="space-y-2 mb-3">
+                <Progress value={course.progress} className="h-2" />
+                
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>{course.completedLessons}/{course.totalLessons} lecciones</span>
+                  <span>{formatTimeSpent(course.timeSpent)} estudiadas</span>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="text-xs">
+                  {course.nextLesson ? (
+                    <>
+                      <p className="text-muted-foreground">Siguiente:</p>
+                      <p className="font-medium line-clamp-1">{course.nextLesson.title}</p>
+                    </>
+                  ) : (
+                    <p className="text-green-600 font-medium">¡Curso completado!</p>
+                  )}
+                </div>
+                <Button size="sm" className="btn-primary w-full text-xs" asChild>
+                  <Link to={`/dashboard/course/${course.id}`}>
+                    <Play className="h-3 w-3 mr-1" />
+                    {course.nextLesson ? 'Continuar' : 'Repasar'}
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop Layout */}
+          <div className="hidden sm:block">
+            <div className="flex">
+              <div className="w-32 h-24 flex-shrink-0">
+                <img
+                  src={course.thumbnail_url || '/placeholder.svg'}
+                  alt={course.title}
+                  className="w-full h-full object-cover rounded-l-lg"
+                />
+              </div>
+              <div className="flex-1 p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="font-semibold text-sm line-clamp-2">{course.title}</h3>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="text-xs">
+                      {course.level}
+                    </Badge>
+                    <div className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
+                      {course.progress}%
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-2 mb-2">
+                  <p className="text-xs text-muted-foreground">
+                    Por {course.instructor_name}
+                  </p>
+                  <div className="flex items-center gap-1">
+                    <Star className="h-3 w-3 fill-current text-yellow-400" />
+                    <span className="text-xs text-muted-foreground">{course.rating}</span>
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Progress value={course.progress} className="h-2" />
+                  
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>{course.completedLessons}/{course.totalLessons} lecciones</span>
+                    <span>{formatTimeSpent(course.timeSpent)} estudiadas</span>
+                  </div>
+                </div>
+                
+                <div className="mt-3 flex items-center justify-between">
+                  <div className="text-xs">
+                    {course.nextLesson ? (
+                      <>
+                        <p className="text-muted-foreground">Siguiente:</p>
+                        <p className="font-medium">{course.nextLesson.title}</p>
+                      </>
+                    ) : (
+                      <p className="text-green-600 font-medium">¡Curso completado!</p>
+                    )}
+                  </div>
+                  <Button size="sm" className="btn-primary" asChild>
+                    <Link to={`/dashboard/course/${course.id}`}>
+                      <Play className="h-3 w-3 mr-1" />
+                      {course.nextLesson ? 'Continuar' : 'Repasar'}
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Card>
+      </motion.div>
+    ));
+  }, [coursesWithProgress, formatTimeSpent]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-12">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <div className="text-6xl mb-4">⚠️</div>
+        <h3 className="text-lg font-semibold mb-2">Error al cargar los cursos</h3>
+        <p className="text-muted-foreground">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -76,10 +198,10 @@ export function DashboardCourses() {
             <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent className="p-4 sm:p-6 pt-0">
-            <div className="text-xl sm:text-2xl font-bold">{overallProgress}%</div>
-            <Progress value={overallProgress} className="mt-2" />
+            <div className="text-xl sm:text-2xl font-bold">{stats.overallProgress}%</div>
+            <Progress value={stats.overallProgress} className="mt-2" />
             <p className="text-xs text-muted-foreground mt-2">
-              {completedLessons} de {totalLessons} lecciones completadas
+              {stats.completedLessons} de {stats.totalLessons} lecciones completadas
             </p>
           </CardContent>
         </Card>
@@ -90,7 +212,7 @@ export function DashboardCourses() {
             <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent className="p-4 sm:p-6 pt-0">
-            <div className="text-xl sm:text-2xl font-bold">{formatTimeSpent(totalTimeSpent)}</div>
+            <div className="text-xl sm:text-2xl font-bold">{formatTimeSpent(stats.totalTimeSpent)}</div>
             <p className="text-xs text-muted-foreground">
               Tiempo estudiado
             </p>
@@ -103,7 +225,7 @@ export function DashboardCourses() {
             <BookOpen className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent className="p-4 sm:p-6 pt-0">
-            <div className="text-xl sm:text-2xl font-bold">{coursesWithProgress.length}</div>
+            <div className="text-xl sm:text-2xl font-bold">{stats.inProgressCourses}</div>
             <p className="text-xs text-muted-foreground">
               En progreso
             </p>
@@ -130,144 +252,7 @@ export function DashboardCourses() {
               </Button>
             </div>
           ) : (
-            coursesWithProgress.map((course: any, index: number) => (
-              <motion.div
-                key={course.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-              >
-                <Card className="hover-lift mx-2 sm:mx-0">
-                  {/* Mobile Layout */}
-                  <div className="block sm:hidden">
-                    <div className="p-4">
-                      <div className="flex items-start space-x-3 mb-3">
-                        <img
-                          src={course.thumbnail}
-                          alt={course.title}
-                          className="w-16 h-12 rounded-lg object-cover flex-shrink-0"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between mb-2">
-                            <h3 className="font-semibold text-sm leading-tight pr-2 line-clamp-2">{course.title}</h3>
-                            <div className="flex items-center gap-1 flex-shrink-0">
-                              <Badge variant="outline" className="text-xs px-2 py-1">
-                                {course.level}
-                              </Badge>
-                              <div className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
-                                {course.progress}%
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="flex items-center gap-2 mb-2">
-                            <p className="text-xs text-muted-foreground">
-                              Por {course.instructor.name}
-                            </p>
-                            <div className="flex items-center gap-1">
-                              <Star className="h-3 w-3 fill-current text-yellow-400" />
-                              <span className="text-xs text-muted-foreground">{course.rating}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-2 mb-3">
-                        <Progress value={course.progress} className="h-2" />
-                        
-                        <div className="flex items-center justify-between text-xs text-muted-foreground">
-                          <span>{course.completedLessons}/{course.totalLessons} lecciones</span>
-                          <span>{formatTimeSpent(course.timeSpent)} estudiadas</span>
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <div className="text-xs">
-                          {course.nextLesson ? (
-                            <>
-                              <p className="text-muted-foreground">Siguiente:</p>
-                              <p className="font-medium line-clamp-1">{course.nextLesson.title}</p>
-                            </>
-                          ) : (
-                            <p className="text-green-600 font-medium">¡Curso completado!</p>
-                          )}
-                        </div>
-                        <Button size="sm" className="btn-primary w-full text-xs" asChild>
-                          <Link to={`/dashboard/course/${course.id}`}>
-                            <Play className="h-3 w-3 mr-1" />
-                            {course.nextLesson ? 'Continuar' : 'Repasar'}
-                          </Link>
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Desktop Layout */}
-                  <div className="hidden sm:block">
-                    <div className="flex">
-                      <div className="w-32 h-24 flex-shrink-0">
-                        <img
-                          src={course.thumbnail}
-                          alt={course.title}
-                          className="w-full h-full object-cover rounded-l-lg"
-                        />
-                      </div>
-                      <div className="flex-1 p-4">
-                        <div className="flex justify-between items-start mb-2">
-                          <h3 className="font-semibold text-sm line-clamp-2">{course.title}</h3>
-                          <div className="flex items-center gap-2">
-                            <Badge variant="outline" className="text-xs">
-                              {course.level}
-                            </Badge>
-                            <div className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
-                              {course.progress}%
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center gap-2 mb-2">
-                          <p className="text-xs text-muted-foreground">
-                            Por {course.instructor.name}
-                          </p>
-                          <div className="flex items-center gap-1">
-                            <Star className="h-3 w-3 fill-current text-yellow-400" />
-                            <span className="text-xs text-muted-foreground">{course.rating}</span>
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <Progress value={course.progress} className="h-2" />
-                          
-                          <div className="flex items-center justify-between text-xs text-muted-foreground">
-                            <span>{course.completedLessons}/{course.totalLessons} lecciones</span>
-                            <span>{formatTimeSpent(course.timeSpent)} estudiadas</span>
-                          </div>
-                        </div>
-                        
-                        <div className="mt-3 flex items-center justify-between">
-                          <div className="text-xs">
-                            {course.nextLesson ? (
-                              <>
-                                <p className="text-muted-foreground">Siguiente:</p>
-                                <p className="font-medium">{course.nextLesson.title}</p>
-                              </>
-                            ) : (
-                              <p className="text-green-600 font-medium">¡Curso completado!</p>
-                            )}
-                          </div>
-                          <Button size="sm" className="btn-primary" asChild>
-                            <Link to={`/dashboard/course/${course.id}`}>
-                              <Play className="h-3 w-3 mr-1" />
-                              {course.nextLesson ? 'Continuar' : 'Repasar'}
-                            </Link>
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
-            ))
+            courseCards
           )}
         </div>
       </div>

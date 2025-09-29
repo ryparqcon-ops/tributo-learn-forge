@@ -24,7 +24,8 @@ const Instructors = () => {
   // Filter and sort instructors
   const filteredInstructors = instructors
     ?.filter(instructor => {
-      const matchesSearch = instructor.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      const fullName = instructor.profiles?.full_name || '';
+      const matchesSearch = fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            instructor.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            instructor.specializations.some(spec => 
                              spec.toLowerCase().includes(searchTerm.toLowerCase())
@@ -48,7 +49,9 @@ const Instructors = () => {
         case 'experience':
           return b.experience_years - a.experience_years;
         case 'name':
-          return a.full_name.localeCompare(b.full_name);
+          const nameA = a.profiles?.full_name || '';
+          const nameB = b.profiles?.full_name || '';
+          return nameA.localeCompare(nameB);
         default:
           return 0;
       }

@@ -24,8 +24,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import coursesData from '@/lib/data/courses.json';
-import lessonsData from '@/lib/data/lessons.json';
+import { useCourse } from '@/hooks/use-courses';
+import { useLessons } from '@/hooks/use-lessons';
+import { useCompletedLessons } from '@/hooks/use-enrollments';
 
 interface Lesson {
   id: string;
@@ -49,13 +50,46 @@ const CourseDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const [activeTab, setActiveTab] = useState('overview');
 
-  // Find course by slug
-  const course = coursesData.find(c => c.slug === slug);
-  const courseLessons = (lessonsData as Lesson[]).filter(l => course?.lessons.includes(l.id));
+  // Get course data from Supabase
+  const { course, loading: courseLoading, error: courseError } = useCourse(slug || '');
+  const { lessons, loading: lessonsLoading } = useLessons(course?.id || '');
+  const { completedLessons, loading: completedLoading } = useCompletedLessons(course?.id || '');
   
-  // Use actual lessons count or fallback to course.lessons.length for consistency
-  const lessonCount = courseLessons.length || course.lessons.length;
+  // Use lessons directly since they're already filtered by courseId
+  const courseLessons = lessons || [];
+  const lessonCount = courseLessons.length;
 
+  // Type assertion for course data (temporary fix for type mismatch)
+  const courseData = course as any;
+
+  // Loading state
+  if (courseLoading || lessonsLoading || completedLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <LoadingSpinner />
+          <p className="text-muted-foreground mt-4">Cargando curso...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (courseError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Error al cargar el curso</h1>
+          <p className="text-muted-foreground mb-4">{courseError}</p>
+          <Button onClick={() => window.location.reload()}>
+            Reintentar
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Course not found
   if (!course) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -67,17 +101,25 @@ const CourseDetail = () => {
     );
   }
 
-  const formatDuration = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+  const formatDuration = (hours: number) => {
+    if (hours >= 1) {
+      const wholeHours = Math.floor(hours);
+      const minutes = Math.round((hours - wholeHours) * 60);
+      if (minutes > 0) {
+        return `${wholeHours}h ${minutes}m`;
+      }
+      return `${wholeHours}h`;
+    }
+    const minutes = Math.round(hours * 60);
+    return `${minutes}m`;
   };
 
-  const formatPrice = (cents: number, currency: string) => {
+  const formatPrice = (price: string | number, currency: string) => {
+    const amount = typeof price === 'string' ? parseFloat(price) : price;
     return new Intl.NumberFormat('es-PE', {
       style: 'currency',
       currency: currency,
-    }).format(cents / 100);
+    }).format(amount);
   };
 
   return (
@@ -114,7 +156,7 @@ const CourseDetail = () => {
                   <div className="text-center">
                     <div className="flex items-center justify-center mb-1 md:mb-2">
                       <Clock className="h-4 w-4 md:h-5 md:w-5 mr-1 md:mr-2" />
-                      <span className="text-lg md:text-2xl font-bold">{formatDuration(course.duration_minutes)}</span>
+                      <span className="text-lg md:text-2xl font-bold">{formatDuration(courseData.duration_hours)}</span>
                     </div>
                     <p className="text-xs md:text-sm text-blue-100">Duración total</p>
                   </div>
@@ -130,7 +172,7 @@ const CourseDetail = () => {
                   <div className="text-center">
                     <div className="flex items-center justify-center mb-1 md:mb-2">
                       <Users className="h-4 w-4 md:h-5 md:w-5 mr-1 md:mr-2" />
-                      <span className="text-lg md:text-2xl font-bold">{course.students_enrolled}</span>
+                      <span className="text-lg md:text-2xl font-bold">{courseData.total_enrollments}</span>
                     </div>
                     <p className="text-xs md:text-sm text-blue-100">Estudiantes</p>
                   </div>
@@ -150,7 +192,7 @@ const CourseDetail = () => {
                   <div className="text-center mb-6">
                     <div className="flex items-center justify-center gap-2 mb-3">
                       <span className="text-4xl md:text-5xl font-bold text-white">
-                        {formatPrice(course.price_cents, course.currency)}
+                        {formatPrice(courseData.price, course.currency)}
                       </span>
                       <span className="text-sm text-blue-200 line-through opacity-75">
                         S/ 399.00
@@ -164,28 +206,27 @@ const CourseDetail = () => {
                   
                   {/* Benefits Section - Centered */}
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
-                    {course.certificate && (
-                      <div className="flex items-center gap-2 bg-white/10 rounded-lg p-3 min-w-0 flex-1 sm:flex-none">
-                        <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center flex-shrink-0">
-                          <Award className="h-4 w-4 text-green-400" />
-                        </div>
-                        <div className="text-center sm:text-left">
-                          <p className="text-sm font-medium text-white">Certificado incluido</p>
-                          <p className="text-xs text-blue-200">Al completar el curso</p>
-                        </div>
+                    {/* Certificado incluido - siempre visible */}
+                    <div className="flex items-center gap-2 bg-white/10 rounded-lg p-3 min-w-0 flex-1 sm:flex-none">
+                      <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                        <Award className="h-4 w-4 text-green-400" />
                       </div>
-                    )}
-                    {course.lifetime_access && (
-                      <div className="flex items-center gap-2 bg-white/10 rounded-lg p-3 min-w-0 flex-1 sm:flex-none">
-                        <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center flex-shrink-0">
-                          <Globe className="h-4 w-4 text-blue-400" />
-                        </div>
-                        <div className="text-center sm:text-left">
-                          <p className="text-sm font-medium text-white">Acceso de por vida</p>
-                          <p className="text-xs text-blue-200">Sin límite de tiempo</p>
-                        </div>
+                      <div className="text-center sm:text-left">
+                        <p className="text-sm font-medium text-white">Certificado incluido</p>
+                        <p className="text-xs text-blue-200">Al completar el curso</p>
                       </div>
-                    )}
+                    </div>
+                    
+                    {/* Acceso de por vida - siempre visible */}
+                    <div className="flex items-center gap-2 bg-white/10 rounded-lg p-3 min-w-0 flex-1 sm:flex-none">
+                      <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                        <Globe className="h-4 w-4 text-blue-400" />
+                      </div>
+                      <div className="text-center sm:text-left">
+                        <p className="text-sm font-medium text-white">Acceso de por vida</p>
+                        <p className="text-xs text-blue-200">Sin límite de tiempo</p>
+                      </div>
+                    </div>
                   </div>
                   
                   {/* CTA Button - Centered */}
@@ -227,7 +268,7 @@ const CourseDetail = () => {
               >
                 <div className="relative rounded-xl md:rounded-2xl overflow-hidden shadow-2xl">
                   <img 
-                    src={course.thumbnail} 
+                    src={courseData.thumbnail_url || '/placeholder.svg'} 
                     alt={course.title}
                     className="w-full h-48 sm:h-64 md:h-80 object-cover"
                   />
@@ -265,15 +306,26 @@ const CourseDetail = () => {
                     </CardHeader>
                     <CardContent>
                       <div className="grid sm:grid-cols-2 gap-3 md:gap-4">
-                        {courseLessons.map((lesson, index) => (
-                          <div key={lesson.id} className="flex items-start gap-3">
-                            <CheckCircle className="h-4 w-4 md:h-5 md:w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                            <div>
-                              <h4 className="font-medium text-sm md:text-base">{lesson.title}</h4>
-                              <p className="text-xs md:text-sm text-muted-foreground">{lesson.description}</p>
+                        {courseLessons.map((lesson, index) => {
+                          const isCompleted = completedLessons.includes(lesson.id);
+                          return (
+                            <div key={lesson.id} className="flex items-start gap-3">
+                              <CheckCircle className={`h-4 w-4 md:h-5 md:w-5 mt-0.5 flex-shrink-0 ${
+                                isCompleted ? 'text-green-500' : 'text-muted-foreground'
+                              }`} />
+                              <div>
+                                <h4 className="font-medium text-sm md:text-base">{lesson.title}</h4>
+                                <p className="text-xs md:text-sm text-muted-foreground">{lesson.description}</p>
+                                {isCompleted && (
+                                  <span className="inline-flex items-center gap-1 text-xs text-green-600 font-medium mt-1">
+                                    <CheckCircle className="h-3 w-3" />
+                                    Completada
+                                  </span>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </CardContent>
                   </Card>
@@ -306,13 +358,13 @@ const CourseDetail = () => {
                     <CardHeader>
                       <CardTitle>Contenido del curso</CardTitle>
                       <p className="text-muted-foreground">
-                        {courseLessons.length} lecciones • {formatDuration(course.duration_minutes)} de contenido
+                        {courseLessons.length} lecciones • {formatDuration(courseData.duration_hours)} de contenido
                       </p>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
                         {courseLessons
-                          .sort((a, b) => a.order - b.order)
+                          .sort((a, b) => a.order_index - b.order_index)
                           .map((lesson, index) => (
                           <div key={lesson.id} className="border rounded-lg p-4 hover:bg-card/50 transition-colors">
                             <div className="flex items-center justify-between">
@@ -328,7 +380,7 @@ const CourseDetail = () => {
                               <div className="flex items-center gap-4">
                                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                   <Clock className="h-4 w-4" />
-                                  {formatDuration(lesson.duration_minutes)}
+                                  {formatDuration(lesson.duration_minutes / 60)}
                                 </div>
                                 <Button variant="ghost" size="sm">
                                   <Play className="h-4 w-4" />
@@ -336,10 +388,10 @@ const CourseDetail = () => {
                               </div>
                             </div>
                             
-                            {lesson.resources && lesson.resources.length > 0 && (
+                            {lesson.resources && Array.isArray(lesson.resources) && lesson.resources.length > 0 && (
                               <div className="mt-3 pt-3 border-t">
                                 <div className="flex flex-wrap gap-2">
-                                  {lesson.resources.map((resource, resIndex) => (
+                                  {lesson.resources.map((resource: any, resIndex: number) => (
                                     <Button key={resIndex} variant="outline" size="sm">
                                       <Download className="h-4 w-4 mr-2" />
                                       {resource.title}
@@ -363,17 +415,19 @@ const CourseDetail = () => {
                     <CardContent>
                       <div className="flex flex-col md:flex-row gap-6">
                         <Avatar className="h-24 w-24">
-                          <AvatarImage src={course.instructor.avatar} />
-                          <AvatarFallback>{course.instructor.name.charAt(0)}</AvatarFallback>
+                          <AvatarImage src={course.instructor_avatar || undefined} />
+                          <AvatarFallback>{course.instructor_name?.charAt(0) || 'I'}</AvatarFallback>
                         </Avatar>
                         
                         <div className="flex-1">
-                          <h3 className="text-2xl font-bold mb-2">{course.instructor.name}</h3>
-                          <p className="text-lg text-muted-foreground mb-2">{course.instructor.title}</p>
-                          <p className="text-sm text-muted-foreground mb-4">{course.instructor.experience} de experiencia</p>
-                          <p className="text-foreground/80 leading-relaxed mb-4">{course.instructor.bio}</p>
+                          <h3 className="text-2xl font-bold mb-2">{course.instructor_name}</h3>
+                          <p className="text-lg text-muted-foreground mb-2">{course.instructor_title}</p>
+                          <p className="text-sm text-muted-foreground mb-4">Experto en tributación</p>
+                          <p className="text-foreground/80 leading-relaxed mb-4">
+                            Instructor especializado con amplia experiencia en el sector tributario peruano.
+                          </p>
                           
-                          <Link to={`/instructor/${course.instructor.id}`}>
+                          <Link to={`/instructor/${course.instructor_id}`}>
                             <Button variant="outline">
                               Ver Perfil Completo
                             </Button>
@@ -406,7 +460,7 @@ const CourseDetail = () => {
                 <CardContent className="p-4 md:p-6">
                   <div className="text-center">
                     <div className="text-2xl md:text-3xl font-bold mb-2">
-                      {formatPrice(course.price_cents, course.currency)}
+                      {formatPrice(courseData.price, course.currency)}
                     </div>
                     <p className="text-xs md:text-sm text-muted-foreground mb-4 md:mb-6">Pago único • Acceso de por vida</p>
                     
@@ -436,12 +490,12 @@ const CourseDetail = () => {
                   
                   <div className="flex items-center justify-between">
                     <span className="text-xs md:text-sm text-muted-foreground">Idioma</span>
-                    <span className="text-xs md:text-sm">{course.language}</span>
+                    <span className="text-xs md:text-sm">{courseData.instructor_languages?.[0] || 'Español'}</span>
                   </div>
                   
                   <div className="flex items-center justify-between">
                     <span className="text-xs md:text-sm text-muted-foreground">Duración</span>
-                    <span className="text-xs md:text-sm">{formatDuration(course.duration_minutes)}</span>
+                    <span className="text-xs md:text-sm">{formatDuration(courseData.duration_hours)}</span>
                   </div>
                   
                   <div className="flex items-center justify-between">
@@ -451,7 +505,7 @@ const CourseDetail = () => {
                   
                   <div className="flex items-center justify-between">
                     <span className="text-xs md:text-sm text-muted-foreground">Estudiantes</span>
-                    <span className="text-xs md:text-sm">{course.students_enrolled}</span>
+                    <span className="text-xs md:text-sm">{courseData.total_enrollments}</span>
                   </div>
                   
                   <div className="flex items-center justify-between">

@@ -21,24 +21,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
-
-interface Lesson {
-  id: string;
-  courseId: string;
-  title: string;
-  description: string;
-  duration_minutes: number;
-  video_url: string;
-  thumbnail: string;
-  resources: Array<{
-    type: string;
-    title: string;
-    url: string;
-  }>;
-  transcript: string;
-  objectives: string[];
-  order: number;
-}
+import type { Lesson } from '@/lib/types/supabase';
 
 interface VideoPlayerModalProps {
   isOpen: boolean;
@@ -72,8 +55,16 @@ export function VideoPlayerModal({
   const [playbackRate, setPlaybackRate] = useState(1);
   const [showSettings, setShowSettings] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
+  const [isCompletingLesson, setIsCompletingLesson] = useState(false);
+  const [autoAdvanceMessage, setAutoAdvanceMessage] = useState<string | null>(null);
 
   const currentLesson = lessons[currentLessonIndex];
+  
+  console.log('🎬 VideoPlayerModal: currentLessonIndex:', currentLessonIndex);
+  console.log('📚 VideoPlayerModal: currentLesson:', currentLesson);
+  console.log('✅ VideoPlayerModal: completedLessons:', completedLessons);
+  console.log('🔍 VideoPlayerModal: isCompleted:', currentLesson ? completedLessons.includes(currentLesson.id) : 'N/A');
+  console.log('🔘 VideoPlayerModal: Botón deshabilitado:', currentLesson ? completedLessons.includes(currentLesson.id) : 'N/A');
 
   console.log('VideoPlayerModal render - showSidebar:', showSidebar, 'isOpen:', isOpen);
 
@@ -186,14 +177,15 @@ export function VideoPlayerModal({
 
   return (
     <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 bg-black"
-        onMouseMove={() => setShowControls(true)}
-        onMouseLeave={() => setShowControls(false)}
-      >
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 bg-black"
+          onMouseMove={() => setShowControls(true)}
+          onMouseLeave={() => setShowControls(false)}
+        >
         {/* Header */}
         <motion.div
           initial={{ y: -100 }}
@@ -440,21 +432,21 @@ export function VideoPlayerModal({
             <div className="mb-6">
               <h4 className="font-semibold text-white mb-3">Lo que aprenderás:</h4>
               <ul className="space-y-2">
-                {currentLesson.objectives.map((objective, index) => (
-                  <li key={index} className="flex items-start gap-2">
+                {currentLesson.description && (
+                  <li className="flex items-start gap-2">
                     <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm text-white/80">{objective}</span>
+                    <span className="text-sm text-white/80">{currentLesson.description}</span>
                   </li>
-                ))}
+                )}
               </ul>
             </div>
 
             {/* Resources */}
-            {currentLesson.resources && currentLesson.resources.length > 0 && (
+            {currentLesson.resources && Array.isArray(currentLesson.resources) && currentLesson.resources.length > 0 && (
               <div className="mb-6">
                 <h4 className="font-semibold text-white mb-3">Recursos:</h4>
                 <div className="space-y-2">
-                  {currentLesson.resources.map((resource, index) => (
+                  {currentLesson.resources.map((resource: any, index: number) => (
                     <Button
                       key={index}
                       variant="outline"
@@ -519,19 +511,54 @@ export function VideoPlayerModal({
                     ? 'bg-green-600 hover:bg-green-700 text-white'
                     : 'bg-primary hover:bg-primary/90 text-white'
                 }`}
-                onClick={() => onLessonComplete(currentLesson.id)}
-                disabled={completedLessons.includes(currentLesson.id)}
+                onClick={async () => {
+                  if (isCompletingLesson || completedLessons.includes(currentLesson.id)) return;
+                  
+                  setIsCompletingLesson(true);
+                  await onLessonComplete(currentLesson.id);
+                  setIsCompletingLesson(false);
+                  
+                  // Auto-advance to next lesson if not the last one
+                  if (currentLessonIndex < lessons.length - 1) {
+                    const nextLesson = lessons[currentLessonIndex + 1];
+                    setAutoAdvanceMessage(`Avanzando a: ${nextLesson.title}`);
+                    
+                    setTimeout(() => {
+                      onLessonChange(currentLessonIndex + 1);
+                      setAutoAdvanceMessage(null);
+                    }, 1500); // 1.5 second delay to show completion and message
+                  }
+                }}
+                disabled={completedLessons.includes(currentLesson.id) || isCompletingLesson}
               >
-                <CheckCircle className="h-4 w-4 mr-2" />
-                {completedLessons.includes(currentLesson.id) ? '✓ Lección Completada' : 'Marcar como Completada'}
+                {isCompletingLesson ? (
+                  <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                ) : (
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                )}
+                {isCompletingLesson 
+                  ? 'Completando...' 
+                  : completedLessons.includes(currentLesson.id) 
+                    ? '✓ Lección Completada' 
+                    : 'Marcar como Completada'
+                }
               </Button>
+              
+              {/* Auto-advance message */}
+              {autoAdvanceMessage && (
+                <div className="mt-3 p-3 bg-blue-500/20 border border-blue-500/30 rounded-lg">
+                  <p className="text-sm text-blue-200 text-center flex items-center justify-center">
+                    <div className="h-3 w-3 mr-2 animate-spin rounded-full border border-blue-200 border-t-transparent" />
+                    {autoAdvanceMessage}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </motion.div>
-      </motion.div>
 
-      {/* Lesson Info Sidebar - Mobile */}
-      {showSidebar && (
+        {/* Lesson Info Sidebar - Mobile */}
+        {showSidebar && (
         <div 
           className="fixed inset-0 bg-black/70 z-50 block lg:hidden"
           onClick={() => {
@@ -608,19 +635,57 @@ export function VideoPlayerModal({
                         ? 'bg-green-600 hover:bg-green-700 text-white'
                         : 'bg-primary hover:bg-primary/90 text-white'
                     }`}
-                    onClick={() => onLessonComplete(currentLesson.id)}
-                    disabled={completedLessons.includes(currentLesson.id)}
+                    onClick={async () => {
+                      if (isCompletingLesson || completedLessons.includes(currentLesson.id)) return;
+                      
+                      setIsCompletingLesson(true);
+                      await onLessonComplete(currentLesson.id);
+                      setIsCompletingLesson(false);
+                      
+                      // Auto-advance to next lesson if not the last one
+                      if (currentLessonIndex < lessons.length - 1) {
+                        const nextLesson = lessons[currentLessonIndex + 1];
+                        setAutoAdvanceMessage(`Avanzando a: ${nextLesson.title}`);
+                        
+                        setTimeout(() => {
+                          onLessonChange(currentLessonIndex + 1);
+                          setAutoAdvanceMessage(null);
+                        }, 1500); // 1.5 second delay to show completion and message
+                      }
+                    }}
+                    disabled={completedLessons.includes(currentLesson.id) || isCompletingLesson}
                   >
-                    <CheckCircle className="h-4 w-4 mr-2" />
+                    {isCompletingLesson ? (
+                      <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    ) : (
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                    )}
                     <span className="text-sm sm:text-base">
-                      {completedLessons.includes(currentLesson.id) ? '✓ Lección Completada' : 'Marcar como Completada'}
+                      {isCompletingLesson 
+                        ? 'Completando...' 
+                        : completedLessons.includes(currentLesson.id) 
+                          ? '✓ Lección Completada' 
+                          : 'Marcar como Completada'
+                      }
                     </span>
                   </Button>
+                  
+                  {/* Auto-advance message */}
+                  {autoAdvanceMessage && (
+                    <div className="mt-3 p-3 bg-blue-500/20 border border-blue-500/30 rounded-lg">
+                      <p className="text-sm text-blue-200 text-center flex items-center justify-center">
+                        <div className="h-3 w-3 mr-2 animate-spin rounded-full border border-blue-200 border-t-transparent" />
+                        {autoAdvanceMessage}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           </div>
         )}
+        </motion.div>
+      )}
     </AnimatePresence>
   );
 }

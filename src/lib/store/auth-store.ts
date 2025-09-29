@@ -57,18 +57,69 @@ export const useAuthStore = create<AuthState>()(
           console.log('✅ Login exitoso:', data.user?.email);
 
           if (data.user) {
-            // Crear usuario básico sin depender de la tabla profiles
+            // Obtener datos del usuario desde la base de datos
+            const { data: profile, error: profileError } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', data.user.id)
+              .single();
+
+            if (profileError) {
+              console.error('❌ Error obteniendo perfil:', profileError);
+              // Crear usuario básico como fallback
+              const user: User = {
+                id: data.user.id,
+                name: data.user.user_metadata?.full_name || 'Usuario',
+                email: data.user.email!,
+                role: 'student',
+                enrolled: [],
+                progress: {},
+                avatar: data.user.user_metadata?.avatar_url,
+              };
+              set({ 
+                user, 
+                token: data.session?.access_token || null, 
+                isAuthenticated: true,
+                isLoading: false 
+              });
+              return;
+            }
+
+            // Obtener inscripciones del usuario
+            const { data: enrollments, error: enrollmentsError } = await supabase
+              .from('enrollments')
+              .select('course_id, progress_percentage')
+              .eq('student_id', data.user.id)
+              .eq('is_active', true);
+
+            if (enrollmentsError) {
+              console.error('❌ Error obteniendo inscripciones:', enrollmentsError);
+            }
+
+            // Crear objeto de progreso
+            const progress: Record<string, number> = {};
+            const enrolled: string[] = [];
+            
+            if (enrollments) {
+              enrollments.forEach(enrollment => {
+                enrolled.push(enrollment.course_id);
+                progress[enrollment.course_id] = enrollment.progress_percentage || 0;
+              });
+            }
+
             const user: User = {
               id: data.user.id,
-              name: data.user.user_metadata?.full_name || 'Usuario',
+              name: profile.full_name || data.user.user_metadata?.full_name || 'Usuario',
               email: data.user.email!,
               role: 'student',
-              enrolled: [],
-              progress: {},
-              avatar: data.user.user_metadata?.avatar_url,
+              enrolled,
+              progress,
+              avatar: profile.avatar_url || data.user.user_metadata?.avatar_url,
+              phone: profile.phone,
+              bio: profile.bio,
             };
 
-            console.log('👤 Usuario creado:', user);
+            console.log('👤 Usuario creado con datos reales:', user);
             set({ 
               user, 
               token: data.session?.access_token || null, 
@@ -202,12 +253,14 @@ export const useAuthStore = create<AuthState>()(
       },
 
       checkSession: async () => {
+        set({ isLoading: true });
         try {
           console.log('🔍 Verificando sesión con Supabase...');
           const { data: { session }, error } = await supabase.auth.getSession();
           
           if (error) {
             console.error('❌ Error obteniendo sesión:', error);
+            set({ isLoading: false });
             return;
           }
           
@@ -216,28 +269,77 @@ export const useAuthStore = create<AuthState>()(
           if (session?.user) {
             console.log('👤 Usuario encontrado:', session.user.email);
             
-            // Crear usuario básico sin depender de la tabla profiles por ahora
+            // Obtener datos del usuario desde la base de datos
+            const { data: profile, error: profileError } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', session.user.id)
+              .single();
+
+            if (profileError) {
+              console.error('❌ Error obteniendo perfil:', profileError);
+              // Crear usuario básico como fallback
+              const user: User = {
+                id: session.user.id,
+                name: session.user.user_metadata?.full_name || 'Usuario',
+                email: session.user.email!,
+                role: 'student',
+                enrolled: [],
+                progress: {},
+                avatar: session.user.user_metadata?.avatar_url,
+              };
+              set({ user, token: session.access_token, isAuthenticated: true, isLoading: false });
+              return;
+            }
+
+            // Obtener inscripciones del usuario
+            const { data: enrollments, error: enrollmentsError } = await supabase
+              .from('enrollments')
+              .select('course_id, progress_percentage')
+              .eq('student_id', session.user.id)
+              .eq('is_active', true);
+
+            if (enrollmentsError) {
+              console.error('❌ Error obteniendo inscripciones:', enrollmentsError);
+            }
+
+            // Crear objeto de progreso
+            const progress: Record<string, number> = {};
+            const enrolled: string[] = [];
+            
+            if (enrollments) {
+              enrollments.forEach(enrollment => {
+                enrolled.push(enrollment.course_id);
+                progress[enrollment.course_id] = enrollment.progress_percentage || 0;
+              });
+            }
+
             const user: User = {
               id: session.user.id,
-              name: session.user.user_metadata?.full_name || 'Usuario',
+              name: profile.full_name || session.user.user_metadata?.full_name || 'Usuario',
               email: session.user.email!,
               role: 'student',
-              enrolled: [],
-              progress: {},
-              avatar: session.user.user_metadata?.avatar_url,
+              enrolled,
+              progress,
+              avatar: profile.avatar_url || session.user.user_metadata?.avatar_url,
+              phone: profile.phone,
+              bio: profile.bio,
             };
 
-            console.log('✅ Usuario configurado:', user);
+            console.log('✅ Usuario configurado con datos reales:', user);
             set({ 
               user, 
               token: session.access_token, 
-              isAuthenticated: true 
+              isAuthenticated: true,
+              isLoading: false
             });
           } else {
             console.log('ℹ️ No hay sesión activa');
+            set({ isLoading: false });
           }
         } catch (error) {
           console.error('❌ Error checking session:', error);
+          set({ isLoading: false });
         }
       },
     }),

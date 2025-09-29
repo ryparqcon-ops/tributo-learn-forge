@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react'
 import { InstructorService } from '@/lib/services/instructors'
-import type { Instructor } from '@/lib/types/supabase'
+import type { Instructor, InstructorWithProfile } from '@/lib/types/supabase'
 
 // =============================================
 // HOOK PARA INSTRUCTORES
 // =============================================
 
 export function useInstructors() {
-  const [instructors, setInstructors] = useState<Instructor[]>([])
+  const [instructors, setInstructors] = useState<InstructorWithProfile[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -33,7 +33,7 @@ export function useInstructors() {
 }
 
 export function useFeaturedInstructors() {
-  const [instructors, setInstructors] = useState<Instructor[]>([])
+  const [instructors, setInstructors] = useState<InstructorWithProfile[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -59,7 +59,7 @@ export function useFeaturedInstructors() {
 }
 
 export function useInstructor(id: string) {
-  const [instructor, setInstructor] = useState<Instructor | null>(null)
+  const [instructor, setInstructor] = useState<InstructorWithProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -91,7 +91,7 @@ export function useSearchInstructors(query: string, filters?: {
   minRating?: number
   experienceMin?: number
 }) {
-  const [instructors, setInstructors] = useState<Instructor[]>([])
+  const [instructors, setInstructors] = useState<InstructorWithProfile[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 

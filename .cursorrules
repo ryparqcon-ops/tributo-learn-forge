@@ -1,0 +1,185 @@
+# 🧠 CURSOR RULES - TRIBUTO LEARN FORGE
+
+## 📚 CONTEXTO DEL PROYECTO
+
+**Tributo Learn Forge** es una plataforma de educación tributaria especializada en el sistema fiscal peruano. Conecta estudiantes con instructores especializados para aprender sobre tributación, contabilidad fiscal y normativas tributarias del Perú.
+
+## 🏗️ ARQUITECTURA CLAVE
+
+### Stack Tecnológico
+- **Frontend**: React 18 + TypeScript + Vite + Tailwind CSS + shadcn/ui
+- **Backend**: Supabase (PostgreSQL + Auth + Storage)
+- **Estado**: Zustand (global) + React Query (servidor)
+- **Routing**: React Router v6
+- **Formularios**: React Hook Form + Zod
+
+### Patrones de Código
+- **Componentes**: Functional components con hooks
+- **Estado**: Hooks personalizados para datos del servidor
+- **Servicios**: Clases para encapsular lógica de datos
+- **Tipos**: TypeScript generado desde Supabase + interfaces personalizadas
+
+## 🎯 REGLAS DE DESARROLLO
+
+### Estructura de Archivos
+```
+src/
+├── components/ui/          # Componentes base (shadcn/ui)
+├── components/course/      # Componentes específicos de cursos
+├── components/instructor/  # Componentes específicos de instructores
+├── hooks/                  # Hooks personalizados
+├── lib/services/          # Servicios de datos
+├── lib/types/             # Tipos TypeScript
+└── pages/                 # Páginas de la aplicación
+```
+
+### Convenciones de Naming
+- **Componentes**: PascalCase (CourseCard, InstructorProfile)
+- **Hooks**: camelCase con prefijo "use" (useCourses, useInstructors)
+- **Servicios**: camelCase con sufijo "Service" (coursesService, instructorsService)
+- **Tipos**: PascalCase (Course, Instructor, User)
+- **Archivos**: kebab-case (course-card.tsx, instructor-profile.tsx)
+
+### Patrones de Componentes
+```typescript
+// Patrón de componente con props tipadas
+interface CourseCardProps {
+  course: Course
+  onEnroll?: (courseId: string) => void
+  variant?: 'default' | 'preview'
+}
+
+export const CourseCard: React.FC<CourseCardProps> = ({ 
+  course, 
+  onEnroll, 
+  variant = 'default' 
+}) => {
+  // Implementación
+}
+```
+
+### Patrones de Hooks
+```typescript
+// Patrón de hook con React Query
+export const useCourses = () => {
+  return useQuery({
+    queryKey: ['courses'],
+    queryFn: coursesService.getCourses,
+    staleTime: 1000 * 60 * 5, // 5 minutos
+  })
+}
+```
+
+## 🔧 CONFIGURACIÓN TÉCNICA
+
+### Supabase
+- **Cliente**: Configurado en `src/lib/supabase.ts`
+- **Tipos**: Generados en `src/lib/types/supabase.ts`
+- **RLS**: Habilitado con políticas por rol
+- **Roles**: student, instructor, admin, staff
+
+### Estado Global
+- **Zustand**: Para estado de UI (theme, auth, modals)
+- **React Query**: Para estado del servidor (cursos, instructores)
+- **Local State**: Para estado específico de componentes
+
+### Styling
+- **Tailwind CSS**: Utility-first approach
+- **shadcn/ui**: Componentes base accesibles
+- **Tema**: Claro/oscuro con next-themes
+- **Responsive**: Mobile-first design
+
+## 🎯 FUNCIONALIDADES IMPLEMENTADAS
+
+### ✅ Completadas
+- Sistema de autenticación con roles
+- Base de datos completa con RLS
+- Componentes UI base (shadcn/ui)
+- Sistema de routing
+- Páginas principales (Courses, Instructors, etc.)
+- Sistema de búsqueda
+- Dashboard básico
+
+### 🔄 En Desarrollo
+- Sistema de inscripciones a cursos
+- Dashboard de usuario completo
+- Sistema de progreso de lecciones
+- Sistema de reseñas y calificaciones
+
+### ⏳ Planificadas
+- Sistema de pagos
+- Asesorías en tiempo real
+- Notificaciones push
+- Certificados digitales
+
+## 🚨 CONSIDERACIONES IMPORTANTES
+
+### Seguridad
+- **Siempre validar datos** con Zod
+- **Usar RLS** para protección de datos
+- **No exponer claves** en el frontend
+- **Validar permisos** antes de operaciones
+
+### Performance
+- **Lazy loading** para rutas
+- **React Query** para caché de datos
+- **Optimizar imágenes** antes de subir
+- **Minimizar re-renders** con useMemo/useCallback
+
+### UX/UI
+- **Loading states** en todas las operaciones async
+- **Error boundaries** para manejo de errores
+- **Responsive design** para móviles
+- **Accesibilidad** con ARIA labels
+
+### Código
+- **TypeScript estricto** siempre
+- **Componentes reutilizables** cuando sea posible
+- **Hooks personalizados** para lógica compleja
+- **Documentar** funciones complejas
+
+## 🔄 FLUJO DE DESARROLLO
+
+### Antes de Codificar
+1. Leer Memory Bank completo
+2. Entender el contexto del proyecto
+3. Revisar patrones existentes
+4. Planificar la implementación
+
+### Durante el Desarrollo
+1. Seguir convenciones establecidas
+2. Usar TypeScript estricto
+3. Implementar loading states
+4. Manejar errores apropiadamente
+
+### Después del Desarrollo
+1. Probar la funcionalidad
+2. Verificar responsive design
+3. Actualizar Memory Bank si es necesario
+4. Documentar cambios importantes
+
+## 📊 MÉTRICAS DE CALIDAD
+
+### Código
+- 100% TypeScript
+- Sin errores de ESLint
+- Componentes < 200 líneas
+- Funciones < 50 líneas
+
+### UX
+- Tiempo de carga < 3 segundos
+- Responsive en móviles
+- Accesible con teclado
+- Loading states visibles
+
+### Funcionalidad
+- Manejo de errores robusto
+- Validación de formularios
+- Estados de carga consistentes
+- Navegación intuitiva
+
+---
+
+**Última actualización**: Diciembre 2024  
+**Versión**: 1.0.0  
+**Estado**: Desarrollo Activo
