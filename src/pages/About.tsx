@@ -164,7 +164,7 @@ const About = () => {
           </div>
         </motion.div>
 
-        {/* Partnership with Sabio-IA */}
+        {/* Partnership with Tributin-IA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -175,9 +175,9 @@ const About = () => {
           <Card className="bg-gradient-primary text-white">
             <CardContent className="p-8 text-center">
               <Sparkles className="w-16 h-16 mx-auto mb-4" />
-              <h2 className="text-3xl font-bold mb-4">Powered by Sabio-IA</h2>
+              <h2 className="text-3xl font-bold mb-4">Powered by Tributin-IA</h2>
               <p className="text-xl mb-6 opacity-90">
-                Nuestra alianza estratégica con Sabio-IA nos permite ofrecer contenido enriquecido 
+                Nuestra alianza estratégica con Tributin-IA nos permite ofrecer contenido enriquecido 
                 con inteligencia artificial, proporcionando insights personalizados y actualizaciones 
                 en tiempo real de la normativa tributaria.
               </p>
@@ -187,11 +187,11 @@ const About = () => {
                 asChild
               >
                 <a 
-                  href="https://sabio-ia.com" 
+                  href="#" 
                   target="_blank" 
                   rel="noopener noreferrer"
                 >
-                  Conocer más sobre Sabio-IA
+                  Conocer más sobre Tributin-IA
                 </a>
               </Button>
             </CardContent>

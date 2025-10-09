@@ -359,12 +359,12 @@ export function AppLayout({ children }: AppLayoutProps) {
                 <li><Link to="/about" className="hover:text-foreground transition-colors">Nosotros</Link></li>
                 <li>
                   <a 
-                    href="https://sabio-ia.com" 
+                    href="#" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="hover:text-foreground transition-colors flex items-center space-x-1"
                   >
-                    <span>Powered by Sabio-IA</span>
+                    <span>Powered by Tributin-IA</span>
                   </a>
                 </li>
               </ul>

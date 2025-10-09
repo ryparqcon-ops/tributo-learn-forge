@@ -29,7 +29,7 @@ const Index = () => {
     {
       icon: Sparkles,
       title: "IA Integrada",
-      description: "Powered by Sabio-IA para insights y recomendaciones"
+      description: "Powered by Tributin-IA para insights y recomendaciones"
     }
   ];
 

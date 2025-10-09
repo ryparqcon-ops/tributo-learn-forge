@@ -117,15 +117,15 @@ export const handlers = [
     });
   }),
 
-  // Sabio-IA enrichment
-  http.post('/api/sabio-enrich', async ({ request }) => {
+  // Tributin-IA enrichment
+  http.post('/api/Tributin-enrich', async ({ request }) => {
     const { lessonId, content } = await request.json() as { lessonId: string; content: string };
     
     // Simulate AI processing delay
     await new Promise(resolve => setTimeout(resolve, 1500));
     
     return HttpResponse.json({
-      summary: "Resumen mock de Sabio-IA sobre la norma X. Esta lección cubre aspectos fundamentales de las obligaciones tributarias, incluyendo los plazos de presentación, formularios requeridos y sanciones por incumplimiento.",
+      summary: "Resumen mock de Tributin-IA sobre la norma X. Esta lección cubre aspectos fundamentales de las obligaciones tributarias, incluyendo los plazos de presentación, formularios requeridos y sanciones por incumplimiento.",
       sources: [
         { 
           title: "Resolución SUNAT 123-2024", 

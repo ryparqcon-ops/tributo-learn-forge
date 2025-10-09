@@ -147,7 +147,7 @@ const Pricing = () => {
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
                 <Sparkles className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="font-semibold mb-2">Powered by Sabio-IA</h3>
+              <h3 className="font-semibold mb-2">Powered by Tributin-IA</h3>
               <p className="text-muted-foreground">Contenido enriquecido con inteligencia artificial</p>
             </div>
             <div className="text-center">
