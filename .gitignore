@@ -58,3 +58,4 @@ debug-*.js
 test-*.js
 get-credentials*.js
 debug-instructor-creation.js
+.vercel
