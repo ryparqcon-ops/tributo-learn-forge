@@ -17,6 +17,7 @@ import { useCourseById } from '@/hooks/use-courses';
 import { useLessons } from '@/hooks/use-lessons';
 import { useCompletedLessons } from '@/hooks/use-enrollments';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { supabase } from '@/lib/supabase';
 
 import type { Lesson } from '@/lib/types/supabase';
 
@@ -47,7 +48,6 @@ const CoursePlayer = () => {
     try {
       // Import the service dynamically to avoid circular dependencies
       const { LessonProgressService } = await import('@/lib/services/enrollments');
-      const { supabase } = await import('@/lib/supabase');
       
       // Get current user
       const { data: { user } } = await supabase.auth.getUser();

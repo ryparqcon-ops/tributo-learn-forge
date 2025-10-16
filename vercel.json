@@ -2,6 +2,7 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
+  "installCommand": "npm install --legacy-peer-deps",
   "env": {
     "VITE_SUPABASE_URL": "https://uyvikdhczecwgrcihwjp.supabase.co",
     "VITE_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV5dmlrZGhjemVjd2dyY2lod2pwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzNDEwNDgsImV4cCI6MjA3MzkxNzA0OH0.MvjGDKR5dqkeEE975SrYrSl-auvKc6rsAI8zJNTn2nM"
