@@ -4,11 +4,14 @@ import { CourseCard } from "@/components/course/course-card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ArrowRight, CheckCircle, Users, Award, Sparkles, Star } from "lucide-react";
-import coursesData from '@/lib/data/courses.json';
+import { useFeaturedCourses } from '@/hooks/use-courses';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import CompanyLogo from '@/components/ui/company-logos';
+import FeaturedInstructors from '@/components/instructor/featured-instructors';
+// import { DebugSupabase } from '@/components/DebugSupabase';
 
 const Index = () => {
-  const courses = coursesData;
+  const { courses, loading: coursesLoading, error: coursesError } = useFeaturedCourses();
 
   const features = [
     {
@@ -55,19 +58,31 @@ const Index = () => {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-            {courses?.slice(0, 4).map((course: any, index: number) => (
-              <motion.div
-                key={course.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <CourseCard course={course} />
-              </motion.div>
-            ))}
-          </div>
+          {coursesLoading ? (
+            <div className="flex justify-center py-12">
+              <LoadingSpinner size="lg" />
+            </div>
+          ) : coursesError ? (
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">⚠️</div>
+              <h3 className="text-lg font-semibold mb-2">Error al cargar los cursos</h3>
+              <p className="text-muted-foreground">{coursesError}</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+              {courses?.slice(0, 4).map((course: any, index: number) => (
+                <motion.div
+                  key={course.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                >
+                  <CourseCard course={course} />
+                </motion.div>
+              ))}
+            </div>
+          )}
 
           <div className="text-center">
             <Button size="lg" className="btn-primary" asChild>
@@ -118,6 +133,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Featured Instructors Section */}
+      <FeaturedInstructors />
 
       {/* CTA Section */}
       <section className="relative py-24 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 text-white overflow-hidden">

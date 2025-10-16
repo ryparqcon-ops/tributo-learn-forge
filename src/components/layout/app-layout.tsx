@@ -17,7 +17,9 @@ import {
   Linkedin,
   Instagram,
   Youtube,
-  Send
+  Send,
+  ChevronDown,
+  GraduationCap
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/lib/store/auth-store';
@@ -25,6 +27,7 @@ import { useUIStore } from '@/lib/store/ui-store';
 import { NavbarSearch } from '@/components/search/navbar-search';
 import { WhatsAppButton } from '@/components/ui/whatsapp-button';
 import { ThemeSwitch } from '@/components/ui/theme-switch';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 
 interface AppLayoutProps {
@@ -36,6 +39,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   const { user, logout, isAuthenticated } = useAuthStore();
   const { setSearchQuery } = useUIStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [coursesDropdownOpen, setCoursesDropdownOpen] = useState(false);
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [subscriptionMessage, setSubscriptionMessage] = useState('');
@@ -86,8 +90,57 @@ export function AppLayout({ children }: AppLayoutProps) {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center space-x-8">
-              {navigation.map((item) => {
+            <nav className="hidden md:flex items-center space-x-1">
+              {/* Cursos Dropdown */}
+              <DropdownMenu open={coursesDropdownOpen} onOpenChange={setCoursesDropdownOpen}>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className={cn(
+                      "flex items-center space-x-1.5 px-3 py-2 h-9 text-sm font-medium transition-all duration-200",
+                      (isActive('/courses') || isActive('/instructors'))
+                        ? "text-primary bg-primary/10 border border-primary/20"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                    )}
+                  >
+                    <BookOpen className="h-4 w-4" />
+                    <span>Cursos</span>
+                    <ChevronDown className="h-3 w-3 transition-transform duration-200" style={{
+                      transform: coursesDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'
+                    }} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-56 mt-1">
+                  <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    Educación
+                  </div>
+                  <DropdownMenuItem asChild>
+                    <Link to="/courses" className="flex items-center space-x-3 w-full px-3 py-2">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <BookOpen className="h-4 w-4 text-primary" />
+                      </div>
+                      <div>
+                        <div className="font-medium">Catálogo de Cursos</div>
+                        <div className="text-xs text-muted-foreground">Explora todos los cursos</div>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/instructors" className="flex items-center space-x-3 w-full px-3 py-2">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <GraduationCap className="h-4 w-4 text-primary" />
+                      </div>
+                      <div>
+                        <div className="font-medium">Nuestros Instructores</div>
+                        <div className="text-xs text-muted-foreground">Conoce a los expertos</div>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Other Navigation Items */}
+              {navigation.slice(1).map((item) => {
                 if (item.protected && !isAuthenticated) return null;
                 
                 return (
@@ -95,9 +148,9 @@ export function AppLayout({ children }: AppLayoutProps) {
                     key={item.name}
                     to={item.href}
                     className={cn(
-                      "flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                      "flex items-center space-x-1.5 px-3 py-2 h-9 text-sm font-medium transition-all duration-200 rounded-md",
                       isActive(item.href)
-                        ? "text-primary bg-primary/10"
+                        ? "text-primary bg-primary/10 border border-primary/20"
                         : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                     )}
                   >
@@ -186,26 +239,77 @@ export function AppLayout({ children }: AppLayoutProps) {
                 </div>
               </div>
               
-              {navigation.map((item) => {
-                if (item.protected && !isAuthenticated) return null;
-                
-                return (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    className={cn(
-                      "flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors",
-                      isActive(item.href)
-                        ? "text-primary bg-primary/10"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                    )}
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <item.icon className="h-4 w-4" />
-                    <span>{item.name}</span>
-                  </Link>
-                );
-              })}
+              {/* Cursos Section in Mobile */}
+              <div className="space-y-1">
+                <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Educación
+                </div>
+                <Link
+                  to="/courses"
+                  className={cn(
+                    "flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors",
+                    isActive('/courses')
+                      ? "text-primary bg-primary/10 border border-primary/20"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  )}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <BookOpen className="h-4 w-4 text-primary" />
+                  </div>
+                  <div>
+                    <div className="font-medium">Catálogo de Cursos</div>
+                    <div className="text-xs text-muted-foreground">Explora todos los cursos</div>
+                  </div>
+                </Link>
+                <Link
+                  to="/instructors"
+                  className={cn(
+                    "flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors",
+                    isActive('/instructors')
+                      ? "text-primary bg-primary/10 border border-primary/20"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  )}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <GraduationCap className="h-4 w-4 text-primary" />
+                  </div>
+                  <div>
+                    <div className="font-medium">Nuestros Instructores</div>
+                    <div className="text-xs text-muted-foreground">Conoce a los expertos</div>
+                  </div>
+                </Link>
+              </div>
+
+              {/* Other Navigation Items */}
+              <div className="space-y-1">
+                <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Servicios
+                </div>
+                {navigation.slice(1).map((item) => {
+                  if (item.protected && !isAuthenticated) return null;
+                  
+                  return (
+                    <Link
+                      key={item.name}
+                      to={item.href}
+                      className={cn(
+                        "flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors",
+                        isActive(item.href)
+                          ? "text-primary bg-primary/10 border border-primary/20"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                      )}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
+                        <item.icon className="h-4 w-4" />
+                      </div>
+                      <span className="font-medium">{item.name}</span>
+                    </Link>
+                  );
+                })}
+              </div>
               
               {isAuthenticated ? (
                 <div className="pt-4 border-t border-border space-y-2">
@@ -327,6 +431,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                 <li><Link to="/courses" className="hover:text-foreground transition-colors">Catálogo</Link></li>
                 <li><Link to="/courses?level=basic" className="hover:text-foreground transition-colors">Básicos</Link></li>
                 <li><Link to="/courses?level=advanced" className="hover:text-foreground transition-colors">Avanzados</Link></li>
+                <li><Link to="/instructors" className="hover:text-foreground transition-colors">Instructores</Link></li>
               </ul>
             </div>
 

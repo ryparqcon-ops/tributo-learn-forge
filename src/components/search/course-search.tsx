@@ -3,24 +3,12 @@ import { Search, X, Clock, User, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { motion, AnimatePresence } from 'framer-motion';
-
-interface Course {
-  id: string;
-  title: string;
-  summary: string;
-  instructor: {
-    name: string;
-  };
-  duration_minutes: number;
-  level: string;
-  tags: string[];
-  thumbnail: string;
-}
+import type { CourseWithDetails } from '@/lib/types/supabase';
 
 interface CourseSearchProps {
-  courses: Course[];
+  courses: CourseWithDetails[];
   onSearch: (query: string) => void;
-  onCourseSelect: (course: Course) => void;
+  onCourseSelect: (course: CourseWithDetails) => void;
   placeholder?: string;
   className?: string;
 }
@@ -33,7 +21,7 @@ export const CourseSearch = ({
   className = ""
 }: CourseSearchProps) => {
   const [query, setQuery] = useState('');
-  const [suggestions, setSuggestions] = useState<Course[]>([]);
+  const [suggestions, setSuggestions] = useState<CourseWithDetails[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [isSearching, setIsSearching] = useState(false);
@@ -53,10 +41,10 @@ export const CourseSearch = ({
       
       // Show suggestions only when typing (query length >= 2)
       if (query.length >= 2 && courses && courses.length > 0) {
-        const filtered = courses.filter((course: Course) => 
-          course.title.toLowerCase().includes(query.toLowerCase()) ||
-          course.summary.toLowerCase().includes(query.toLowerCase()) ||
-          course.instructor.name.toLowerCase().includes(query.toLowerCase()) ||
+        const filtered = courses.filter((course: CourseWithDetails) => 
+          course.title?.toLowerCase().includes(query.toLowerCase()) ||
+          course.short_description?.toLowerCase().includes(query.toLowerCase()) ||
+          course.instructor_name?.toLowerCase().includes(query.toLowerCase()) ||
           (course.tags && course.tags.some((tag: string) => tag.toLowerCase().includes(query.toLowerCase())))
         ).slice(0, 5);
         
@@ -100,8 +88,8 @@ export const CourseSearch = ({
     }
   };
 
-  const handleCourseSelect = (course: Course) => {
-    setQuery(course.title);
+  const handleCourseSelect = (course: CourseWithDetails) => {
+    setQuery(course.title || '');
     setShowSuggestions(false);
     setSelectedIndex(-1);
     onCourseSelect(course);
@@ -116,10 +104,17 @@ export const CourseSearch = ({
     inputRef.current?.focus();
   };
 
-  const formatDuration = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+  const formatDuration = (hours: number) => {
+    if (hours >= 1) {
+      const wholeHours = Math.floor(hours);
+      const minutes = Math.round((hours - wholeHours) * 60);
+      if (minutes > 0) {
+        return `${wholeHours}h ${minutes}m`;
+      }
+      return `${wholeHours}h`;
+    }
+    const minutes = Math.round(hours * 60);
+    return `${minutes}m`;
   };
 
   // Close suggestions when clicking outside
@@ -195,8 +190,8 @@ export const CourseSearch = ({
                 >
                   <div className="flex items-start gap-3">
                     <img
-                      src={course.thumbnail}
-                      alt={course.title}
+                      src={course.thumbnail_url || '/placeholder.svg'}
+                      alt={course.title || 'Curso'}
                       className="w-12 h-8 object-cover rounded"
                     />
                     <div className="flex-1 min-w-0">
@@ -204,16 +199,16 @@ export const CourseSearch = ({
                         {course.title}
                       </h4>
                       <p className="text-xs text-muted-foreground line-clamp-1 mt-1">
-                        {course.summary}
+                        {course.short_description}
                       </p>
                       <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <User className="h-3 w-3" />
-                          {course.instructor.name}
+                          {course.instructor_name}
                         </div>
                         <div className="flex items-center gap-1">
                           <Clock className="h-3 w-3" />
-                          {formatDuration(course.duration_minutes)}
+                          {formatDuration(course.duration_hours || 0)}
                         </div>
                         <Badge variant="outline" className="text-xs">
                           {course.level}

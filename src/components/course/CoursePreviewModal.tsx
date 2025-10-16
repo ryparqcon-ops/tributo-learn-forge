@@ -23,42 +23,12 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
 import { Link } from 'react-router-dom';
-
-interface Course {
-  id: string;
-  title: string;
-  slug: string;
-  summary: string;
-  description?: string;
-  instructor: {
-    id: string;
-    name: string;
-    title?: string;
-    experience?: string;
-    avatar?: string;
-  };
-  price_cents: number;
-  currency: string;
-  duration_minutes: number;
-  avg_lesson_time: number;
-  lessons: string[];
-  tags: string[];
-  rating: number;
-  students_enrolled: number;
-  ai_enabled: boolean;
-  thumbnail: string;
-  level?: string;
-  language?: string;
-  certificate?: boolean;
-  lifetime_access?: boolean;
-  preview_video?: string;
-  preview_duration?: number;
-}
+import type { CourseWithDetails } from '@/lib/types/supabase';
 
 interface CoursePreviewModalProps {
   isOpen: boolean;
   onClose: () => void;
-  course: Course;
+  course: CourseWithDetails;
 }
 
 export function CoursePreviewModal({ isOpen, onClose, course }: CoursePreviewModalProps) {
@@ -73,18 +43,25 @@ export function CoursePreviewModal({ isOpen, onClose, course }: CoursePreviewMod
   const [showVideoInfo, setShowVideoInfo] = useState(true);
   const [controlsTimeout, setControlsTimeout] = useState<NodeJS.Timeout | null>(null);
 
-  const formatPrice = (cents: number, currency: string) => {
-    const amount = cents / 100;
+  const formatPrice = (price: string | number, currency: string) => {
+    const amount = typeof price === 'string' ? parseFloat(price) : price;
     return new Intl.NumberFormat('es-PE', {
       style: 'currency',
       currency: currency,
     }).format(amount);
   };
 
-  const formatDuration = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+  const formatDuration = (hours: number) => {
+    if (hours >= 1) {
+      const wholeHours = Math.floor(hours);
+      const minutes = Math.round((hours - wholeHours) * 60);
+      if (minutes > 0) {
+        return `${wholeHours}h ${minutes}m`;
+      }
+      return `${wholeHours}h`;
+    }
+    const minutes = Math.round(hours * 60);
+    return `${minutes}m`;
   };
 
   const formatTime = (time: number) => {
@@ -324,7 +301,7 @@ export function CoursePreviewModal({ isOpen, onClose, course }: CoursePreviewMod
                     <video
                       ref={videoRef}
                       className="w-full h-full object-contain max-w-full max-h-full"
-                      poster={course.thumbnail}
+                      poster={course.thumbnail_url || undefined}
                       onClick={togglePlay}
                     >
                       <source src={course.preview_video} type="video/mp4" />
@@ -332,11 +309,13 @@ export function CoursePreviewModal({ isOpen, onClose, course }: CoursePreviewMod
                     </video>
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-muted">
-                      <img
-                        src={course.thumbnail}
-                        alt={course.title}
-                        className="w-full h-full object-cover"
-                      />
+                      <div className="text-center p-8">
+                        <div className="text-6xl mb-4">🎥</div>
+                        <h3 className="text-lg font-semibold mb-2">Vista previa no disponible</h3>
+                        <p className="text-muted-foreground">
+                          Este curso no tiene video de vista previa disponible.
+                        </p>
+                      </div>
                     </div>
                   )}
 
@@ -441,7 +420,7 @@ export function CoursePreviewModal({ isOpen, onClose, course }: CoursePreviewMod
                 {/* Price and CTA */}
                 <div className="text-center">
                   <div className="text-3xl font-bold text-primary mb-2">
-                    {formatPrice(course.price_cents, course.currency)}
+                    {formatPrice(course.price, course.currency)}
                   </div>
                   <Button className="w-full" size="lg" asChild>
                     <Link to={`/course/${course.slug}`}>
@@ -455,15 +434,15 @@ export function CoursePreviewModal({ isOpen, onClose, course }: CoursePreviewMod
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div className="flex items-center gap-2">
                     <Clock className="h-4 w-4 text-muted-foreground" />
-                    <span>{formatDuration(course.duration_minutes)}</span>
+                    <span>{formatDuration(course.duration_hours)}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <BookOpen className="h-4 w-4 text-muted-foreground" />
-                    <span>{course.lessons?.length || 0} lecciones</span>
+                    <span>{course.total_lessons || 0} lecciones</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Users className="h-4 w-4 text-muted-foreground" />
-                    <span>{course.students_enrolled} estudiantes</span>
+                    <span>{course.total_enrollments} estudiantes</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
@@ -483,16 +462,16 @@ export function CoursePreviewModal({ isOpen, onClose, course }: CoursePreviewMod
                 <div>
                   <h3 className="font-semibold mb-2">Instructor</h3>
                   <div className="flex items-center gap-3">
-                    {course.instructor.avatar && (
+                    {course.instructor_avatar && (
                       <img
-                        src={course.instructor.avatar}
-                        alt={course.instructor.name}
+                        src={course.instructor_avatar}
+                        alt={course.instructor_name}
                         className="w-10 h-10 rounded-full object-cover"
                       />
                     )}
                     <div>
-                      <p className="font-medium text-sm">{course.instructor.name}</p>
-                      <p className="text-xs text-muted-foreground">{course.instructor.title}</p>
+                      <p className="font-medium text-sm">{course.instructor_name}</p>
+                      <p className="text-xs text-muted-foreground">{course.instructor_title}</p>
                     </div>
                   </div>
                 </div>

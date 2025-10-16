@@ -7,20 +7,66 @@ import { Button } from '@/components/ui/button';
 import { Link, useLocation } from 'react-router-dom';
 import { DashboardCourses } from '@/components/dashboard/dashboard-courses';
 import { DashboardMeetings } from '@/components/dashboard/dashboard-meetings';
+import DashboardAdvisory from '@/components/dashboard/dashboard-advisory';
 import CoursePlayer from './CoursePlayer';
 import Account from './Account';
 import { cn } from '@/lib/utils';
+import { useDashboard } from '@/hooks/use-dashboard';
+import { useUserConsultationSessions } from '@/hooks/use-consultations';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 const DashboardHome = () => {
   const { user } = useAuthStore();
+  const { stats, loading, error } = useDashboard();
+  const { sessions, loading: sessionsLoading } = useUserConsultationSessions();
 
-  // Calculate stats from user data
-  const enrolledCourses = user?.enrolled?.length || 0;
-  const progressValues = user?.progress ? Object.values(user.progress) : [];
-  const totalProgress = progressValues.length > 0 ? 
-    Math.round(progressValues.reduce((sum, progress) => sum + progress, 0) / progressValues.length) : 0;
-  const completedCourses = progressValues.filter(progress => progress === 100).length;
-  const inProgressCourses = progressValues.filter(progress => progress > 0 && progress < 100).length;
+  // Obtener próxima asesoría
+  const getNextAdvisory = () => {
+    if (sessionsLoading || sessions.length === 0) return null;
+    
+    const today = new Date();
+    const upcomingSessions = sessions
+      .filter(session => {
+        const sessionDate = new Date(session.scheduled_at);
+        return sessionDate >= today && session.status !== 'completed' && session.status !== 'cancelled';
+      })
+      .sort((a, b) => new Date(a.scheduled_at).getTime() - new Date(b.scheduled_at).getTime());
+    
+    if (upcomingSessions.length === 0) return null;
+    
+    const nextSession = upcomingSessions[0];
+    const sessionDate = new Date(nextSession.scheduled_at);
+    
+    return {
+      day: sessionDate.getDate(),
+      month: sessionDate.toLocaleDateString('es-ES', { month: 'short' }),
+      time: sessionDate.toLocaleTimeString('es-ES', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: true 
+      })
+    };
+  };
+
+  const nextMeeting = getNextAdvisory();
+
+  if (loading || sessionsLoading) {
+    return (
+      <div className="flex justify-center py-12">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <div className="text-6xl mb-4">⚠️</div>
+        <h3 className="text-lg font-semibold mb-2">Error al cargar el dashboard</h3>
+        <p className="text-muted-foreground">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -43,7 +89,7 @@ const DashboardHome = () => {
               <BookOpen className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-primary">{enrolledCourses}</div>
+              <div className="text-2xl font-bold text-primary">{stats.totalCourses}</div>
               <p className="text-xs text-muted-foreground">Total inscritos</p>
             </CardContent>
           </Card>
@@ -54,7 +100,7 @@ const DashboardHome = () => {
               <BarChart3 className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-primary">{totalProgress}%</div>
+              <div className="text-2xl font-bold text-primary">{stats.overallProgress}%</div>
               <p className="text-xs text-muted-foreground">Completado</p>
             </CardContent>
           </Card>
@@ -65,7 +111,7 @@ const DashboardHome = () => {
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-primary">{inProgressCourses}</div>
+              <div className="text-2xl font-bold text-primary">{stats.inProgressCourses}</div>
               <p className="text-xs text-muted-foreground">Cursos activos</p>
             </CardContent>
           </Card>
@@ -76,7 +122,7 @@ const DashboardHome = () => {
               <User className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-primary">{completedCourses}</div>
+              <div className="text-2xl font-bold text-primary">{stats.completedCourses}</div>
               <p className="text-xs text-muted-foreground">Cursos finalizados</p>
             </CardContent>
           </Card>
@@ -87,8 +133,17 @@ const DashboardHome = () => {
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-primary">20</div>
-              <p className="text-xs text-muted-foreground">Ene, 4:00 PM</p>
+              {nextMeeting ? (
+                <>
+                  <div className="text-2xl font-bold text-primary">{nextMeeting.day}</div>
+                  <p className="text-xs text-muted-foreground">{nextMeeting.month}, {nextMeeting.time}</p>
+                </>
+              ) : (
+                <>
+                  <div className="text-2xl font-bold text-muted-foreground">-</div>
+                  <p className="text-xs text-muted-foreground">No hay asesorías programadas</p>
+                </>
+              )}
             </CardContent>
           </Card>
           
@@ -98,8 +153,19 @@ const DashboardHome = () => {
               <User className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-primary">24h</div>
+              <div className="text-2xl font-bold text-primary">{Math.round(stats.totalTimeSpent / 60)}h</div>
               <p className="text-xs text-muted-foreground">Este mes</p>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Asesorías Totales</CardTitle>
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-primary">{sessions.length}</div>
+              <p className="text-xs text-muted-foreground">Sesiones reservadas</p>
             </CardContent>
           </Card>
         </div>
@@ -207,7 +273,7 @@ const Dashboard = () => {
       <Routes>
         <Route index element={<DashboardHome />} />
         <Route path="courses" element={<DashboardCourses />} />
-        <Route path="advisory" element={<DashboardMeetings />} />
+        <Route path="advisory" element={<DashboardAdvisory />} />
         <Route path="account" element={<Account />} />
         <Route path="course/:courseId" element={<CoursePlayer />} />
       </Routes>

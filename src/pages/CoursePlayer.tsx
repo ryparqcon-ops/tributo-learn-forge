@@ -13,37 +13,26 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { VideoPlayerModal } from '@/components/video/VideoPlayerModal';
-import coursesData from '@/lib/data/courses.json';
-import lessonsData from '@/lib/data/lessons.json';
+import { useCourseById } from '@/hooks/use-courses';
+import { useLessons } from '@/hooks/use-lessons';
+import { useCompletedLessons } from '@/hooks/use-enrollments';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
-interface Lesson {
-  id: string;
-  courseId: string;
-  title: string;
-  description: string;
-  duration_minutes: number;
-  video_url: string;
-  thumbnail: string;
-  resources: Array<{
-    type: string;
-    title: string;
-    url: string;
-  }>;
-  transcript: string;
-  objectives: string[];
-  order: number;
-}
+import type { Lesson } from '@/lib/types/supabase';
 
 const CoursePlayer = () => {
   const { courseId } = useParams<{ courseId: string }>();
   const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
-  const [completedLessons, setCompletedLessons] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Find course and lessons
-  const course = coursesData.find(c => c.id === courseId);
-  const courseLessons = (lessonsData as Lesson[]).filter(l => course?.lessons.includes(l.id))
-    .sort((a, b) => a.order - b.order);
+  console.log('🎯 CoursePlayer: courseId obtenido:', courseId);
+  console.log('🎯 CoursePlayer: Componente renderizado');
+
+  // Get course and lessons from Supabase
+  const { course, loading: courseLoading, error: courseError } = useCourseById(courseId || '');
+  const { lessons: courseLessons, loading: lessonsLoading, error: lessonsError } = useLessons(courseId || '');
+  const { completedLessons, loading: completedLoading, error: completedError, refetch: refetchCompletedLessons, addCompletedLessonOptimistic } = useCompletedLessons(courseId || '');
+
 
   const currentLesson = courseLessons[currentLessonIndex];
 
@@ -53,9 +42,36 @@ const CoursePlayer = () => {
     return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
   };
 
-  const handleLessonComplete = (lessonId: string) => {
-    if (!completedLessons.includes(lessonId)) {
-      setCompletedLessons(prev => [...prev, lessonId]);
+  const handleLessonComplete = async (lessonId: string) => {
+    console.log('🔄 handleLessonComplete llamado con lessonId:', lessonId);
+    try {
+      // Import the service dynamically to avoid circular dependencies
+      const { LessonProgressService } = await import('@/lib/services/enrollments');
+      const { supabase } = await import('@/lib/supabase');
+      
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      console.log('👤 Usuario actual:', user?.id);
+      console.log('📚 CourseId:', courseId);
+      
+      if (!user || !courseId) {
+        console.log('❌ Usuario o courseId no encontrado');
+        return;
+      }
+
+      // Update UI optimistically first
+      addCompletedLessonOptimistic(lessonId);
+      
+      // Mark lesson as completed in database
+      console.log('💾 Marcando lección como completada en la base de datos...');
+      await LessonProgressService.completeLesson(user.id, lessonId, courseId);
+      
+      console.log('✅ Lección marcada como completada:', lessonId);
+      
+      // No need for immediate refetch - optimistic update handles UI
+      // The data will sync naturally when component remounts or user navigates
+    } catch (error) {
+      console.error('❌ Error al completar lección:', error);
     }
   };
 
@@ -63,8 +79,37 @@ const CoursePlayer = () => {
     setCurrentLessonIndex(index);
   };
 
-  const progress = courseLessons.length > 0 ? ((currentLessonIndex + 1) / courseLessons.length) * 100 : 0;
+  // Calcular progreso basado en lecciones completadas, no en la lección actual
+  const progress = courseLessons.length > 0 ? (completedLessons.length / courseLessons.length) * 100 : 0;
 
+  // Loading state
+  if (courseLoading || lessonsLoading || completedLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  // Error state
+  if (courseError || lessonsError || completedError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Error al cargar el curso</h1>
+          <p className="text-muted-foreground mb-4">{courseError || lessonsError || completedError}</p>
+          <Button asChild>
+            <Link to="/dashboard/courses">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Volver a Mis Cursos
+            </Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Course not found
   if (!course) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -124,17 +169,17 @@ const CoursePlayer = () => {
               <CardContent>
                 <div className="flex flex-col sm:flex-row items-start gap-4 mb-6">
                   <img
-                    src={course.thumbnail}
+                    src={course.thumbnail_url || '/placeholder.svg'}
                     alt={course.title}
                     className="w-full sm:w-32 h-32 sm:h-20 object-cover rounded-lg"
                   />
                   <div className="flex-1 min-w-0">
                     <h2 className="text-lg sm:text-xl font-bold mb-2">{course.title}</h2>
-                    <p className="text-muted-foreground mb-3 text-sm sm:text-base">{course.description}</p>
+                    <p className="text-muted-foreground mb-3 text-sm sm:text-base">{course.short_description}</p>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <Clock className="h-4 w-4" />
-                        {formatDuration(course.duration_minutes)}
+                        {formatDuration(course.duration_hours * 60)}
                       </div>
                       <div className="flex items-center gap-1">
                         <BookOpen className="h-4 w-4" />
@@ -148,7 +193,7 @@ const CoursePlayer = () => {
                   <div>
                     <h3 className="font-semibold mb-2 text-sm sm:text-base">Instructor</h3>
                     <p className="text-sm text-muted-foreground">
-                      {course.instructor.name} - {course.instructor.title}
+                      {course.instructor_name} - {course.instructor_title}
                     </p>
                   </div>
 
@@ -227,7 +272,9 @@ const CoursePlayer = () => {
           <Button
             size="lg"
             className="btn-primary w-full sm:w-auto"
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => {
+              setIsModalOpen(true);
+            }}
           >
             <Play className="h-5 w-5 mr-2" />
             Comenzar a aprender
@@ -236,16 +283,18 @@ const CoursePlayer = () => {
       </div>
 
       {/* Video Player Modal */}
-      <VideoPlayerModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        course={course}
-        lessons={courseLessons}
-        currentLessonIndex={currentLessonIndex}
-        onLessonChange={handleLessonChange}
-        onLessonComplete={handleLessonComplete}
-        completedLessons={completedLessons}
-      />
+      {course && courseLessons && courseLessons.length > 0 && (
+        <VideoPlayerModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          course={course}
+          lessons={courseLessons}
+          currentLessonIndex={currentLessonIndex}
+          onLessonChange={handleLessonChange}
+          onLessonComplete={handleLessonComplete}
+          completedLessons={completedLessons}
+        />
+      )}
     </div>
   );
 };

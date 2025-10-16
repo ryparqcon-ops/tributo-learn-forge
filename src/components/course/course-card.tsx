@@ -7,6 +7,7 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { CoursePreviewModal } from './CoursePreviewModal';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
+import type { CourseWithDetails } from '@/lib/types/supabase';
 
 interface Course {
   id: string;
@@ -38,7 +39,7 @@ interface Course {
 }
 
 interface CourseCardProps {
-  course: Course;
+  course: CourseWithDetails;
   className?: string;
   viewMode?: 'grid' | 'list';
 }
@@ -46,21 +47,25 @@ interface CourseCardProps {
 export function CourseCard({ course, className, viewMode = 'grid' }: CourseCardProps) {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
-  const formatPrice = (cents: number, currency: string) => {
-    const amount = cents / 100;
+  const formatPrice = (price: string | number, currency: string) => {
+    const amount = typeof price === 'string' ? parseFloat(price) : price;
     return new Intl.NumberFormat('es-PE', {
       style: 'currency',
       currency: currency,
     }).format(amount);
   };
 
-  const formatDuration = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    if (hours > 0) {
-      return `${hours}h ${mins}m`;
+  const formatDuration = (hours: number) => {
+    if (hours >= 1) {
+      const wholeHours = Math.floor(hours);
+      const minutes = Math.round((hours - wholeHours) * 60);
+      if (minutes > 0) {
+        return `${wholeHours}h ${minutes}m`;
+      }
+      return `${wholeHours}h`;
     }
-    return `${mins}m`;
+    const minutes = Math.round(hours * 60);
+    return `${minutes}m`;
   };
 
   if (viewMode === 'list') {
@@ -76,7 +81,7 @@ export function CourseCard({ course, className, viewMode = 'grid' }: CourseCardP
             {/* Thumbnail */}
             <div className="relative w-full lg:w-80 h-48 lg:h-auto overflow-hidden flex-shrink-0">
               <img
-                src={course.thumbnail}
+                src={course.thumbnail_url || '/placeholder.svg'}
                 alt={course.title}
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
@@ -133,28 +138,28 @@ export function CourseCard({ course, className, viewMode = 'grid' }: CourseCardP
                     {course.title}
                   </h3>
                   <p className="text-muted-foreground text-sm line-clamp-2">
-                    {course.summary}
+                    {course.short_description}
                   </p>
                 </div>
 
                 {/* Instructor */}
                 <p className="text-sm text-muted-foreground mb-4">
-                  Por <span className="font-medium text-foreground">{course.instructor.name}</span>
+                  Por <span className="font-medium text-foreground">{course.instructor_name}</span>
                 </p>
 
                 {/* Stats - Horizontal layout for list view */}
                 <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-4">
                   <div className="flex items-center space-x-1">
                     <Clock className="h-4 w-4" />
-                    <span>{formatDuration(course.duration_minutes)}</span>
+                    <span>{formatDuration(course.duration_hours)}</span>
                   </div>
                   <div className="flex items-center space-x-1">
                     <BookOpen className="h-4 w-4" />
-                    <span>{course.lessons?.length || 0} lecciones</span>
+                    <span>{course.total_lessons || 0} lecciones</span>
                   </div>
                   <div className="flex items-center space-x-1">
                     <Users className="h-4 w-4" />
-                    <span>{course.students_enrolled}</span>
+                    <span>{course.total_enrollments}</span>
                   </div>
                   <div className="flex items-center space-x-1">
                     <Star className="h-4 w-4 fill-current text-yellow-400" />
@@ -187,7 +192,7 @@ export function CourseCard({ course, className, viewMode = 'grid' }: CourseCardP
               {/* Footer */}
               <div className="flex items-center justify-between pt-4 border-t mt-4">
                 <div className="text-2xl font-bold text-primary">
-                  {formatPrice(course.price_cents, course.currency)}
+                  {formatPrice(course.price, course.currency)}
                 </div>
                 <Button className="btn-primary" asChild>
                   <Link to={`/course/${course.slug}`}>
@@ -220,7 +225,7 @@ export function CourseCard({ course, className, viewMode = 'grid' }: CourseCardP
       <Card className="course-card h-full flex flex-col">
         <div className="relative overflow-hidden">
           <img
-            src={course.thumbnail}
+            src={course.thumbnail_url || '/placeholder.svg'}
             alt={course.title}
             className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
           />
@@ -275,28 +280,28 @@ export function CourseCard({ course, className, viewMode = 'grid' }: CourseCardP
                 {course.title}
               </h3>
               <p className="text-muted-foreground text-sm line-clamp-2">
-                {course.summary}
+                {course.short_description}
               </p>
             </div>
 
             {/* Instructor */}
             <p className="text-sm text-muted-foreground">
-              Por <span className="font-medium text-foreground">{course.instructor.name}</span>
+              Por <span className="font-medium text-foreground">{course.instructor_name}</span>
             </p>
 
             {/* Stats */}
             <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground">
               <div className="flex items-center space-x-1">
                 <Clock className="h-4 w-4" />
-                <span>{formatDuration(course.duration_minutes)}</span>
+                <span>{formatDuration(course.duration_hours)}</span>
               </div>
               <div className="flex items-center space-x-1">
                 <BookOpen className="h-4 w-4" />
-                <span>{course.lessons?.length || 0} lecciones</span>
+                <span>{course.total_lessons || 0} lecciones</span>
               </div>
               <div className="flex items-center space-x-1">
                 <Users className="h-4 w-4" />
-                <span>{course.students_enrolled}</span>
+                <span>{course.total_enrollments}</span>
               </div>
               <div className="flex items-center space-x-1">
                 <Star className="h-4 w-4 fill-current text-yellow-400" />
@@ -330,7 +335,7 @@ export function CourseCard({ course, className, viewMode = 'grid' }: CourseCardP
         <CardFooter className="p-6 pt-0">
           <div className="flex items-center justify-between w-full">
             <div className="text-2xl font-bold text-primary">
-              {formatPrice(course.price_cents, course.currency)}
+              {formatPrice(course.price, course.currency)}
             </div>
             <Button className="btn-primary" asChild>
               <Link to={`/course/${course.slug}`}>
