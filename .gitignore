@@ -52,8 +52,9 @@ ehthumbs.db
 supabase/.branches
 supabase/.temp
 
-# Large files
+# Large files and debug scripts
 *.sql
-*.js
-!src/**/*.js
-!src/**/*.ts
+debug-*.js
+test-*.js
+get-credentials*.js
+debug-instructor-creation.js
